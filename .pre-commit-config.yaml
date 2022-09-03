@@ -20,3 +20,4 @@ repos:
   rev: 22.8.0
   hooks:
   - id: black
+    args: ["--verbose"]
