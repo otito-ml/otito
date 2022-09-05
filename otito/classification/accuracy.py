@@ -1,6 +1,6 @@
 import numpy as np
 
-from otito.validation.utils import argument_validator, get_metric
+from otito.validation.utils import argument_validator, call_metric
 from otito.validation.base_validators import (
     BaseAccuracyValidator,
     WeightedAccuracyValidator,
@@ -23,16 +23,21 @@ def accuracy(
     y_observed: np.ndarray,
     y_predicted: np.ndarray,
     sample_weights: np.ndarray = None,
-    validate_input: bool = True,
+    parse_input: bool = True,
 ) -> float:
     if sample_weights is not None:
-        weighted_accuracy = get_metric(_weighted_accuracy, validate_input)
-        return weighted_accuracy(
+        return call_metric(
+            func=_weighted_accuracy,
+            validate=parse_input,
             y_observed=y_observed,
             y_predicted=y_predicted,
             sample_weights=sample_weights,
         )
 
     else:
-        base_accuracy = get_metric(_base_accuracy, validate_input)
-        return base_accuracy(y_observed=y_observed, y_predicted=y_predicted)
+        return call_metric(
+            func=_base_accuracy,
+            validate=parse_input,
+            y_observed=y_observed,
+            y_predicted=y_predicted,
+        )
