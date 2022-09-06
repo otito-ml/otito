@@ -19,7 +19,7 @@ def _weighted_accuracy(
     return np.dot((y_observed == y_predicted), sample_weights)
 
 
-def accuracy(
+def accuracy_score(
     y_observed: np.ndarray,
     y_predicted: np.ndarray,
     sample_weights: np.ndarray = None,
