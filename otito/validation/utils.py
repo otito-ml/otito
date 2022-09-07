@@ -11,10 +11,3 @@ def argument_validator(validator_model):
         return inner_wrapper
 
     return outer_wrapper
-
-
-def call_metric(func, validate=True, *args, **kwargs):
-    if validate:
-        return func(*args, **kwargs)
-    else:
-        return func.__wrapped__(*args, **kwargs)

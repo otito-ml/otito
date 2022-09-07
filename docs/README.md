@@ -1,19 +1,12 @@
 # Otito
 
-**Otito** is a tool that provides a suite of model agnostic methods to evaluate the behaviour and performance of ml models.
+> **otitọ** means _truth_ in Yoruba. It encapsulates the purpose of this tool to ensure that we reveal the truth of a models performance and behaviour before it is deployed.
 
 
 ## Getting Started
+\# TODO write this section
 
-### Installing `Otito`
-
-```
-> pip install otito
-```
-
-### Quickstart
-
-#### Example
+### Example
 
 ```
 from otito.metrics import accuracy_score

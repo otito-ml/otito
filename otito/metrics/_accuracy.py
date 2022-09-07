@@ -1,6 +1,7 @@
 import numpy as np
 
-from otito.validation.utils import argument_validator, call_metric
+from otito.metrics.utils import call_metric
+from otito.validation.utils import argument_validator
 from otito.validation.base_validators import (
     BaseAccuracyValidator,
     WeightedAccuracyValidator,
