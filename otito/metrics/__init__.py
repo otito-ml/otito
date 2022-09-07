@@ -1,3 +1,3 @@
-from ._accuracy import accuracy_score
+from ._classification import accuracy_score
 
 __all__ = ["accuracy_score"]
