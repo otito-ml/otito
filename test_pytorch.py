@@ -1,9 +1,10 @@
-from otito.metrics.pytorch import Accuracy
+from otito.metrics import load_metric
 import torch as pt
 import timeit
 
 start_time = timeit.default_timer()
-accuracy_score = Accuracy()
+accuracy_score = load_metric(metric="Accuracy", package="pytorch", parse_input=True)
+
 result = accuracy_score(
     y_observed=pt.tensor([1, 1, 0]),
     y_predicted=pt.tensor([1, 0, 0]),

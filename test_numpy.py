@@ -1,9 +1,11 @@
-from otito.metrics.numpy import Accuracy
+from otito.metrics import load_metric
 import numpy as np
 import timeit
 
 start_time = timeit.default_timer()
-accuracy_score = Accuracy(parse_input=False)
+
+accuracy_score = load_metric("Accuracy")
+
 result = accuracy_score(
     y_observed=np.array([1, 1, 0]),
     y_predicted=np.array([1, 0, 0]),
