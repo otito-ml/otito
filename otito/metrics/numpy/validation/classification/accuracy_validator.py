@@ -24,6 +24,7 @@ class Array(np.ndarray, metaclass=ArrayMeta):
 class BaseAccuracyValidator(BasePyVal):
     y_observed: Array[float] = None
     y_predicted: Array[float] = None
+    sample_weights: Array[float] = None
 
     @root_validator
     def input_must_be_same_shape(cls, values):
@@ -34,7 +35,3 @@ class BaseAccuracyValidator(BasePyVal):
                 f"(left) != {len(values.get('y_predicted'))} (right)"
             )
         return values
-
-
-class WeightedAccuracyValidator(BaseAccuracyValidator):
-    sample_weights: Array[float]

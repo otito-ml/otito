@@ -15,7 +15,7 @@ def argument_validator(validator_model):
         @functools.wraps(func)
         def inner_wrapper(*args, **kwargs):
             validated_kwargs = validator_model(**kwargs)
-            return func(args, **validated_kwargs.dict())
+            return func(*args, **validated_kwargs.dict())
 
         return inner_wrapper
 
