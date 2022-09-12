@@ -1,40 +1,63 @@
 import torch as pt
 
-from otito.metrics._base_metric import BaseMetric
+
 from otito.metrics.pytorch.validation.classification.accuracy_validator import (
     BaseAccuracyValidator,
 )
+from otito.metrics._base_metric import BaseMetric, PyTorchBaseMetric
 from otito.metrics.utils import argument_validator
 
 
-class Accuracy(BaseMetric):
+class Accuracy(PyTorchBaseMetric, BaseMetric):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def _base_accuracy(self, y_true: pt.Tensor, y_pred: pt.Tensor) -> pt.Tensor:
-        return (y_true == y_pred).float().mean(dim=0)
+    def _base_accuracy(
+        self, y_observed: pt.Tensor, y_predicted: pt.Tensor
+    ) -> pt.Tensor:
+        return (y_observed == y_predicted).float().mean(dim=0)
 
     def _weighted_accuracy(
-        self, y_true: pt.Tensor, y_pred: pt.Tensor, sample_weights: pt.Tensor
+        self, y_observed: pt.Tensor, y_predicted: pt.Tensor, sample_weights: pt.Tensor
     ) -> pt.Tensor:
-        return pt.dot((y_true == y_pred).float(), sample_weights)
+        return pt.dot((y_observed == y_predicted).float(), sample_weights)
 
     @argument_validator(BaseAccuracyValidator)
-    def calculate(
+    def compute(
         self,
-        y_true: pt.Tensor,
-        y_pred: pt.Tensor,
+        y_observed: pt.Tensor = None,
+        y_predicted: pt.Tensor = None,
         sample_weights: pt.Tensor = None,
     ) -> float:
         if sample_weights is None:
             return self._base_accuracy(
-                y_true=y_true,
-                y_pred=y_pred,
+                y_observed=y_observed,
+                y_predicted=y_predicted,
             )
 
         else:
             return self._weighted_accuracy(
-                y_true=y_true,
-                y_pred=y_pred,
+                y_observed=y_observed,
+                y_predicted=y_predicted,
+                sample_weights=sample_weights,
+            )
+
+    @argument_validator(BaseAccuracyValidator)
+    def update(
+        self,
+        y_observed: pt.Tensor = None,
+        y_predicted: pt.Tensor = None,
+        sample_weights: pt.Tensor = None,
+    ) -> float:
+        if sample_weights is None:
+            return self._base_accuracy(
+                y_observed=y_observed,
+                y_predicted=y_predicted,
+            )
+
+        else:
+            return self._weighted_accuracy(
+                y_observed=y_observed,
+                y_predicted=y_predicted,
                 sample_weights=sample_weights,
             )

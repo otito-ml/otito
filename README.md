@@ -20,7 +20,7 @@ from otito.metrics import accuracy_score
 
 result = accuracy_score(
     y=[1, 1, 0, 1],
-    y_pred=[1, 0, 0, 1]
+    y_predicted=[1, 0, 0, 1]
 )
 print(result)
 >>> 0.75

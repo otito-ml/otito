@@ -22,16 +22,16 @@ class Array(np.ndarray, metaclass=ArrayMeta):
 
 
 class BaseAccuracyValidator(BasePyVal):
-    y_true: Array[float]
-    y_pred: Array[float]
+    y_observed: Array[float]
+    y_predicted: Array[float]
     sample_weights: Array[float] = None
 
     @root_validator
     def input_must_be_same_shape(cls, values):
-        if not (len(values.get("y_true")) == len(values.get("y_pred"))):
+        if not (len(values.get("y_observed")) == len(values.get("y_predicted"))):
             raise ValueError(
                 f"Shape of inputs mismatched: "
-                f"{len(values.get('y_true'))} "
-                f"(left) != {len(values.get('y_pred'))} (right)"
+                f"{len(values.get('y_observed'))} "
+                f"(left) != {len(values.get('y_predicted'))} (right)"
             )
         return values
