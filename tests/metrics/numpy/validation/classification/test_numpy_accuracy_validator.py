@@ -9,7 +9,7 @@ class TestAccuracyValidator:
 
     @pytest.mark.parametrize(
         "y_observed,y_predicted",
-        [([1, 1, 1, 1], [1, 1, 1])],
+        [([1, 1, 1, 1], [1, 1, 1]), ([1, 1, 1], [1, 1, 1, 1])],
     )
     def test_input_must_be_same_shape(self, y_observed, y_predicted):
         with pytest.raises(ValueError) as _:
