@@ -1,7 +1,6 @@
 import torch as pt
 
-
-from otito.metrics.pytorch.validation.classification.accuracy_validator import (
+from otito.metrics.pytorch.validation.classification import (
     BaseAccuracyValidator,
 )
 from otito.metrics._base_metric import BaseMetric, PyTorchBaseMetric

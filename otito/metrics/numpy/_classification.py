@@ -1,7 +1,7 @@
 import numpy as np
 
 from otito.metrics import BaseMetric
-from otito.metrics.numpy.validation.classification.accuracy_validator import (
+from otito.metrics.numpy.validation.classification import (
     BaseAccuracyValidator,
 )
 from otito.metrics.utils import argument_validator

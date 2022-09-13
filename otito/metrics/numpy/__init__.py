@@ -1,3 +1,3 @@
-from otito.metrics.numpy.classification.accuracy import Accuracy
+from otito.metrics.numpy._classification import Accuracy
 
 __all__ = ["Accuracy"]
