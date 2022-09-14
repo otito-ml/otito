@@ -1,4 +1,5 @@
 from math import isclose
+import numpy as np
 from pydantic import BaseModel as BasePyVal, root_validator
 
 from otito.metrics.numpy.validation.custom_types import Array
@@ -15,21 +16,19 @@ class BaseAccuracyValidator(BasePyVal):
             raise ValueError(
                 f"Shape of inputs mismatched: "
                 f"{len(values.get('y_observed'))} "
-                f"(left) != {len(values.get('y_predicted'))} (right)"
+                f"(observed) != {len(values.get('y_predicted'))} (predicted)"
             )
         return values
 
     @root_validator
     def input_must_be_binary(cls, values):
-        max_size = max(
-            (len(set(values.get("y_observed"))), "y_observed"),
-            (len(set(values.get("y_predicted"))), "y_predicted"),
+        found_classes = set(
+            np.concatenate((values.get("y_observed"), values.get("y_predicted")))
         )
-        if max_size[0] > 2:
+        if len(found_classes) > 2:
             raise ValueError(
-                f"Input is not binary: '{max_size[1]}' "
-                f"contains {max_size[0]} classes. "
-                f" Classes found in '{max_size[1]}': {set(values.get(max_size[1]))}"
+                f"Input is not binary: '{len(found_classes)}' "
+                f"classes found. Found classes: `{list(found_classes)}`"
             )
         return values
 
