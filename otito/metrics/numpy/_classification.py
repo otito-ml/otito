@@ -1,14 +1,31 @@
 import numpy as np
 
-from otito.metrics import BaseMetric
-from otito.metrics.numpy.validation.classification import (
-    BaseAccuracyValidator,
+from otito.metrics._base_metric import BaseMetric
+from otito.metrics.numpy.validation.custom_types import Array
+from otito.metrics.numpy.validation.classification.conditions import (
+    labels_must_be_same_shape,
+    labels_must_be_binary,
+    sample_weights_must_be_same_len,
+    sample_weights_must_sum_to_one,
 )
-from otito.metrics.utils import argument_validator
 
 
 class Accuracy(BaseMetric):
+
+    input_validator_config = {
+        "y_observed": (Array[float], None),
+        "y_predicted": (Array[float], None),
+        "sample_weights": (Array[float], None),
+        "__validators__": {
+            "labels_must_be_same_shape": labels_must_be_same_shape,
+            "labels_must_be_binary": labels_must_be_binary,
+            "sample_weights_must_be_same_len": sample_weights_must_be_same_len,
+            "sample_weights_must_sum_to_one": sample_weights_must_sum_to_one,
+        },
+    }
+
     def __init__(self, *args, **kwargs):
+        kwargs["val_config"] = self.input_validator_config
         super().__init__(*args, **kwargs)
 
     def _base_accuracy(self, y_observed: np.ndarray, y_predicted: np.ndarray) -> float:
@@ -22,7 +39,6 @@ class Accuracy(BaseMetric):
     ) -> float:
         return np.dot((y_observed == y_predicted), sample_weights)
 
-    @argument_validator(BaseAccuracyValidator)
     def compute(
         self,
         y_observed: np.ndarray = None,

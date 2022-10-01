@@ -3,9 +3,11 @@ import functools
 
 
 def load_metric(metric: str = "Accuracy", package: str = "numpy", *args, **kwargs):
-    metric_module = importlib.import_module(name=f"otito.metrics.{package}")
+    metric_module = importlib.import_module(
+        name=f"otito.metrics.{package}._classification"
+    )
     callable_metric = getattr(metric_module, metric)
-    return callable_metric(*args, **kwargs)
+    return callable_metric(*args, package=package, **kwargs)
 
 
 def argument_validator(validator_model):

@@ -1,14 +1,33 @@
 import torch as pt
 
-from otito.metrics.pytorch.validation.classification import (
-    BaseAccuracyValidator,
-)
 from otito.metrics._base_metric import BaseMetric, PyTorchBaseMetric
-from otito.metrics.utils import argument_validator
+from otito.metrics.pytorch.validation.classification.conditions import (
+    labels_must_be_same_shape,
+    labels_must_be_binary,
+    sample_weights_must_be_same_len,
+    sample_weights_must_sum_to_one,
+)
 
 
 class Accuracy(PyTorchBaseMetric, BaseMetric):
+    class Config:
+        arbitrary_types_allowed = True
+
+    input_validator_config = {
+        "y_observed": (pt.Tensor, None),
+        "y_predicted": (pt.Tensor, None),
+        "sample_weights": (pt.Tensor, None),
+        "__validators__": {
+            "labels_must_be_same_shape": labels_must_be_same_shape,
+            "labels_must_be_binary": labels_must_be_binary,
+            "sample_weights_must_be_same_len": sample_weights_must_be_same_len,
+            "sample_weights_must_sum_to_one": sample_weights_must_sum_to_one,
+        },
+        "__config__": Config,
+    }
+
     def __init__(self, *args, **kwargs):
+        kwargs["val_config"] = self.input_validator_config
         super().__init__(*args, **kwargs)
 
     def _base_accuracy(
@@ -21,7 +40,7 @@ class Accuracy(PyTorchBaseMetric, BaseMetric):
     ) -> pt.Tensor:
         return pt.dot((y_observed == y_predicted).float(), sample_weights)
 
-    @argument_validator(BaseAccuracyValidator)
+    @PyTorchBaseMetric.validation_handler
     def compute(
         self,
         y_observed: pt.Tensor = None,
@@ -41,7 +60,6 @@ class Accuracy(PyTorchBaseMetric, BaseMetric):
                 sample_weights=sample_weights,
             )
 
-    @argument_validator(BaseAccuracyValidator)
     def update(
         self,
         y_observed: pt.Tensor = None,

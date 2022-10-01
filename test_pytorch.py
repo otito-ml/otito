@@ -2,7 +2,7 @@ from otito.metrics import load_metric
 import torch as pt
 import timeit
 
-accuracy_score = load_metric(metric="Accuracy", package="pytorch", parse_input=True)
+accuracy_score = load_metric(metric="Accuracy", package="pytorch", validate_input=True)
 
 start_time = timeit.default_timer()
 result = accuracy_score(

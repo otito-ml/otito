@@ -1,31 +1,37 @@
 import inspect
+import functools
 from abc import ABC, abstractmethod
+
+from pydantic import create_model
 
 
 class BaseMetric(ABC):
-    def __init__(self, parse_input=True, *args, **kwargs):
-        self.parse_input = parse_input
+    def __init__(self, *args, **kwargs):
         self.callable = self.compute
+        self.validate_input = kwargs["validate_input"]
+        self.validator = self._build_validator(kwargs["package"], kwargs["val_config"])
 
     @abstractmethod
     def compute(self, *args, **kwargs):
         pass
 
-    def merge_args_kwargs(self, *args, **kwargs):
-        arg_names = inspect.getfullargspec(self.callable.__wrapped__).args
+    def _build_validator(self, package, config):
+        return create_model(f"{package}:{self.__class__.__name__}Model", **config)
+
+    def _merge_args_kwargs(self, *args, **kwargs):
+        arg_names = inspect.getfullargspec(self.callable).args
         arg_names.remove("self")
         kwargs.update(dict(zip(arg_names, args)))
         return kwargs
 
-    def call_metric(self, *args, **kwargs):
-        if self.parse_input:
-            return self.callable(*args, **kwargs)
-        else:
-            return self.callable.__wrapped__(self, *args, **kwargs)
+    def _parse_input(self, *args, **kwargs):
+        metric_arguments = self._merge_args_kwargs(*args, **kwargs)
+        if self.validate_input:
+            metric_arguments = self.validator(**metric_arguments).dict()
+        return metric_arguments
 
     def __call__(self, *args, **kwargs):
-        metric_arguments = self.merge_args_kwargs(*args, **kwargs)
-        return self.call_metric(**metric_arguments)
+        return self.callable(**self._parse_input(*args, **kwargs))
 
 
 class PyTorchBaseMetric(ABC):
@@ -36,3 +42,11 @@ class PyTorchBaseMetric(ABC):
     @abstractmethod
     def update(self, *arg, **kwargs):
         pass
+
+    @staticmethod
+    def validation_handler(func):
+        @functools.wraps(func)
+        def inner(self, *args, **kwargs):
+            return func(self, **self._parse_input(*args, **kwargs))
+
+        return inner
