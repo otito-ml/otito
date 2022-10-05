@@ -10,6 +10,12 @@ from otito.metrics.pytorch.validation.classification.conditions import (
 
 
 class Accuracy(PyTorchBaseMetric, BaseMetric):
+    """
+    The Pytorch Binary Classification Accuracy Metric provides a score that
+    represents the proportion of a dataset that was correctly labeled by a
+    binary classifier
+    """
+
     class Config:
         arbitrary_types_allowed = True
 

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from otito.metrics.numpy._classification import Accuracy
+from otito.metrics.numpy import Accuracy
 
 
 class TestAccuracy:
