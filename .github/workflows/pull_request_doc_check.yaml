@@ -16,4 +16,5 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
+        pre-build-command: "touch /tmp/sphinx-log"
         build-command: "python -m poetry run sphinx-build -b html source build"
