@@ -16,4 +16,4 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
-        build-command: "python -m poetry run make html"
+        build-command: "make p_html"
