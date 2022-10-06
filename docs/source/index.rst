@@ -18,7 +18,7 @@ Check out the :doc:`usage` section for further information. There you'll find in
 Contents
 --------
 
-.. toctree::
+.. ree::
     :maxdepth: 3
 
     usage
