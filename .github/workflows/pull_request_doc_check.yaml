@@ -7,9 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: BSFishy/pip-action@v1
+    - uses: actions/setup-python@v4
       with:
-        packages: pip==22.2.2
+        python-version: 3.8
+    - uses: abatilo/actions-poetry@v2.1.6
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
