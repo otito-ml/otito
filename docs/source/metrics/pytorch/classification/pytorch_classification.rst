@@ -5,6 +5,7 @@ Classification
 
 .. autosummary::
     :toctree: generated
+    :template: metric_class.rst
     :nosignatures:
 
     Accuracy
