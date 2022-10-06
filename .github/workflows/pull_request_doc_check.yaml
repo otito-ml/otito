@@ -16,4 +16,4 @@ jobs:
     - name: Build Docs Check
       run: |
         cd docs/
-        poetry run sphinx-build -b html source build
+        poetry run sphinx-build -b html source build -W
