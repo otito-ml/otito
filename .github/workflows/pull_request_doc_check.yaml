@@ -11,6 +11,8 @@ jobs:
       with:
         python-version: 3.8
     - uses: abatilo/actions-poetry@v2.1.6
+    - name: install
+      run: poetry install
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
