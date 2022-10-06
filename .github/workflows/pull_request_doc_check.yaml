@@ -13,8 +13,7 @@ jobs:
     - uses: abatilo/actions-poetry@v2.1.6
     - name: install
       run: poetry install
-    - uses: ammaraskar/sphinx-action@master
-      with:
-        docs-folder: "docs/"
-        pre-build-command: "touch /tmp/sphinx-log"
-        build-command: "python -m poetry run sphinx-build -b html source build"
+    - name: Build Docs Check
+      run: |
+        cd docs/
+        poetry run sphinx-build -b html source build
