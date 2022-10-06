@@ -17,3 +17,5 @@ jobs:
       run: |
         cd docs/
         poetry run sphinx-build -b html source build -W
+    - name: Unit Tests
+      run: poetry run pytest tests -vvv
