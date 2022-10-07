@@ -8,4 +8,4 @@ Classification
     :template: metric_class.rst
     :nosignatures:
 
-    Accuracy
+    BinaryAccuracy
