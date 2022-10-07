@@ -33,17 +33,14 @@ class BinaryAccuracy(PyTorchBaseMetric, BaseMetric):
     }
 
     def __init__(self, *args, **kwargs):
-        kwargs["val_config"] = self.input_validator_config
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, val_config=self.input_validator_config, **kwargs)
 
-    def _base_accuracy(
-        self, y_observed: pt.Tensor, y_predicted: pt.Tensor
-    ) -> pt.Tensor:
+    def _base_accuracy(self, y_observed: pt.Tensor, y_predicted: pt.Tensor) -> float:
         return (y_observed == y_predicted).float().mean(dim=0)
 
     def _weighted_accuracy(
         self, y_observed: pt.Tensor, y_predicted: pt.Tensor, sample_weights: pt.Tensor
-    ) -> pt.Tensor:
+    ) -> float:
         return pt.dot((y_observed == y_predicted).float(), sample_weights)
 
     @PyTorchBaseMetric.validation_handler
