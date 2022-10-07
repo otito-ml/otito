@@ -1,10 +1,10 @@
-__all__ = ["Accuracy"]
+__all__ = ["BinaryAccuracy"]
 
 import numpy as np
 
 from otito.metrics._base_metric import BaseMetric
 from otito.metrics.numpy.validation.custom_types import Array
-from otito.metrics.numpy.validation.classification.conditions import (
+from otito.metrics.numpy.validation.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
     sample_weights_must_be_same_len,
@@ -12,7 +12,7 @@ from otito.metrics.numpy.validation.classification.conditions import (
 )
 
 
-class Accuracy(BaseMetric):
+class BinaryAccuracy(BaseMetric):
     """
     The Numpy Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a
@@ -38,8 +38,7 @@ class Accuracy(BaseMetric):
         :param kwargs:
 
         """
-        kwargs["val_config"] = self.input_validator_config
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, val_config=self.input_validator_config, **kwargs)
 
     def compute(
         self,

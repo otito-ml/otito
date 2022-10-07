@@ -2,7 +2,7 @@ import pytest
 import torch as pt
 import numpy as np
 
-from otito.metrics.pytorch import Accuracy
+from otito.metrics.pytorch import BinaryAccuracy
 
 
 class TestAccuracy:
@@ -12,7 +12,7 @@ class TestAccuracy:
 
     @pytest.fixture
     def accuracy(self):
-        return Accuracy(package="pytorch", validate_input=True)
+        return BinaryAccuracy(package="pytorch", validate_input=True)
 
     @pytest.mark.usefixtures("accuracy")
     @pytest.mark.parametrize(
@@ -67,7 +67,7 @@ class TestAccuracy:
     )
     def test_labels_must_be_same_shape(self, accuracy, y_observed, y_predicted):
         expected_msg = (
-            f"1 validation error for pytorch:AccuracyModel\ny_predicted\n  "
+            f"1 validation error for pytorch:BinaryAccuracyModel\ny_predicted\n  "
             f"Shape of inputs mismatched: {len(y_observed)} "
             f"(observed) != {len(y_predicted)} (predicted) (type=value_error)"
         )
@@ -93,7 +93,7 @@ class TestAccuracy:
             set(np.concatenate((y_observed.numpy(), y_predicted.numpy())))
         )
         expected_msg = (
-            f"1 validation error for pytorch:AccuracyModel\ny_predicted\n  "
+            f"1 validation error for pytorch:BinaryAccuracyModel\ny_predicted\n  "
             f"Input is not binary: '{len(found_classes)}' class labels "
             "found (type=value_error)"
         )
@@ -123,7 +123,7 @@ class TestAccuracy:
         self, accuracy, y_observed, y_predicted, sample_weights
     ):
         expected_msg = (
-            f"1 validation error for pytorch:AccuracyModel\nsample_weights\n  "
+            f"1 validation error for pytorch:BinaryAccuracyModel\nsample_weights\n  "
             "'sample_weights' is not the same length as input. "
             f"Lengths (sample_weights:{len(sample_weights)}, "
             f"input:{len(y_observed)}) (type=value_error)"
@@ -157,7 +157,7 @@ class TestAccuracy:
         self, accuracy, y_observed, y_predicted, sample_weights
     ):
         expected_msg = (
-            f"1 validation error for pytorch:AccuracyModel\nsample_weights\n  "
+            f"1 validation error for pytorch:BinaryAccuracyModel\nsample_weights\n  "
             "'sample_weights' do not sum to one. "
             f"Sum of `sample_weights`:{sample_weights.sum()} (type=value_error)"
         )

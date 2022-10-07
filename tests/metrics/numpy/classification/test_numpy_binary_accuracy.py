@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from otito.metrics.numpy import Accuracy
+from otito.metrics.numpy import BinaryAccuracy
 
 
 class TestAccuracy:
@@ -11,7 +11,7 @@ class TestAccuracy:
 
     @pytest.fixture
     def accuracy(self):
-        return Accuracy(package="numpy", validate_input=True)
+        return BinaryAccuracy(package="numpy", validate_input=True)
 
     @pytest.mark.usefixtures("accuracy")
     @pytest.mark.parametrize(
@@ -73,7 +73,7 @@ class TestAccuracy:
     )
     def test_labels_must_be_same_shape(self, accuracy, y_observed, y_predicted):
         expected_msg = (
-            f"1 validation error for numpy:AccuracyModel\ny_predicted\n  "
+            f"1 validation error for numpy:BinaryAccuracyModel\ny_predicted\n  "
             f"Shape of inputs mismatched: {y_observed.shape[0]} "
             f"(observed) != {y_predicted.shape[0]} (predicted) (type=value_error)"
         )
@@ -97,7 +97,7 @@ class TestAccuracy:
     def test_labels_must_be_binary(self, accuracy, y_observed, y_predicted):
         found_classes = sorted(list(set(np.concatenate((y_observed, y_predicted)))))
         expected_msg = (
-            f"1 validation error for numpy:AccuracyModel\ny_predicted\n  "
+            f"1 validation error for numpy:BinaryAccuracyModel\ny_predicted\n  "
             f"Input is not binary: '{len(found_classes)}' class labels "
             "found (type=value_error)"
         )
@@ -126,7 +126,7 @@ class TestAccuracy:
         self, accuracy, y_observed, y_predicted, sample_weights
     ):
         expected_msg = (
-            f"1 validation error for numpy:AccuracyModel\nsample_weights\n  "
+            f"1 validation error for numpy:BinaryAccuracyModel\nsample_weights\n  "
             "'sample_weights' is not the same length as input. "
             f"Lengths (sample_weights:{len(sample_weights)}, "
             f"input:{len(y_observed)}) (type=value_error)"
@@ -160,7 +160,7 @@ class TestAccuracy:
         self, accuracy, y_observed, y_predicted, sample_weights
     ):
         expected_msg = (
-            f"1 validation error for numpy:AccuracyModel\nsample_weights\n  "
+            f"1 validation error for numpy:BinaryAccuracyModel\nsample_weights\n  "
             "'sample_weights' do not sum to one. "
             f"Sum of `sample_weights`:{sample_weights.sum()} (type=value_error)"
         )

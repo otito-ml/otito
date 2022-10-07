@@ -1,7 +1,7 @@
 import torch as pt
 
 from otito.metrics._base_metric import BaseMetric, PyTorchBaseMetric
-from otito.metrics.pytorch.validation.classification.conditions import (
+from otito.metrics.pytorch.validation.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
     sample_weights_must_be_same_len,
@@ -9,7 +9,7 @@ from otito.metrics.pytorch.validation.classification.conditions import (
 )
 
 
-class Accuracy(PyTorchBaseMetric, BaseMetric):
+class BinaryAccuracy(PyTorchBaseMetric, BaseMetric):
     """
     The Pytorch Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a

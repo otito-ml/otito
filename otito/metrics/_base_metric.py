@@ -28,6 +28,8 @@ class BaseMetric(ABC):
         metric_arguments = self._merge_args_kwargs(*args, **kwargs)
         if self.validate_input:
             metric_arguments = self.validator(**metric_arguments).dict()
+        else:
+            metric_arguments = self.validator.construct(**metric_arguments).dict()
         return metric_arguments
 
     def __call__(self, *args, **kwargs):

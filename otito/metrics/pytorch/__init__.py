@@ -1,3 +1,3 @@
-from otito.metrics.pytorch.classification import Accuracy
+from otito.metrics.pytorch.classification.binary_classification import BinaryAccuracy
 
-__all__ = ["Accuracy"]
+__all__ = ["BinaryAccuracy"]

@@ -2,10 +2,10 @@ import importlib
 import functools
 
 
-def load_metric(metric: str = "Accuracy", package: str = "numpy", *args, **kwargs):
-    metric_module = importlib.import_module(
-        name=f"otito.metrics.{package}._classification"
-    )
+def load_metric(
+    metric: str = "BinaryAccuracy", package: str = "numpy", *args, **kwargs
+):
+    metric_module = importlib.import_module(name=f"otito.metrics.{package}")
     callable_metric = getattr(metric_module, metric)
     return callable_metric(*args, package=package, **kwargs)
 
