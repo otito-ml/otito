@@ -7,7 +7,7 @@ from otito.metrics._base_metric import BaseMetric
 
 class BinaryAccuracy(BaseMetric):
     """
-    The Pytorch Binary Classification Accuracy Metric provides a score that
+    The Tensorflow Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a
     binary classifier
     """
@@ -25,14 +25,20 @@ class BinaryAccuracy(BaseMetric):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, val_config=self.input_validator_config, **kwargs)
 
-    def _base_accuracy(self, y_observed: tf.Tensor, y_predicted: tf.Tensor) -> float:
-        return tf.math.reduce_mean(tf.cast((y_observed == y_predicted), tf.float32))
+    @staticmethod
+    def _base_accuracy(y_observed: tf.Tensor, y_predicted: tf.Tensor) -> float:
+        return tf.math.reduce_mean(
+            tf.cast(tf.math.equal(y_observed, y_predicted), tf.float32)
+        )
 
+    @staticmethod
     def _weighted_accuracy(
-        self, y_observed: tf.Tensor, y_predicted: tf.Tensor, sample_weights: tf.Tensor
+        y_observed: tf.Tensor, y_predicted: tf.Tensor, sample_weights: tf.Tensor
     ) -> float:
         return tf.tensordot(
-            tf.cast((y_observed == y_predicted), tf.float32), sample_weights, axes=1
+            tf.cast(tf.math.equal(y_observed, y_predicted), tf.float32),
+            sample_weights,
+            axes=1,
         )
 
     def compute(

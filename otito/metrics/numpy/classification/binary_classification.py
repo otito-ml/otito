@@ -73,11 +73,12 @@ class BinaryAccuracy(BaseMetric):
                 sample_weights=sample_weights,
             )
 
-    def _base_accuracy(self, y_observed: np.ndarray, y_predicted: np.ndarray) -> float:
+    @staticmethod
+    def _base_accuracy(y_observed: np.ndarray, y_predicted: np.ndarray) -> float:
         return np.average(y_observed == y_predicted)
 
+    @staticmethod
     def _weighted_accuracy(
-        self,
         y_observed: np.ndarray,
         y_predicted: np.ndarray,
         sample_weights: np.ndarray,

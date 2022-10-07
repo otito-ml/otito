@@ -2,19 +2,21 @@ import pytest
 import torch as pt
 import numpy as np
 
-from otito.metrics.pytorch import BinaryAccuracy
+from otito.metrics.utils import load_metric
 
 
-class TestAccuracy:
+class TestBinaryAccuracy:
     """
-    Class to test Numpy Accuracy Metric Function
+    Class to test the pytorch binary accuracy metric
     """
 
     @pytest.fixture
-    def accuracy(self):
-        return BinaryAccuracy(package="pytorch", validate_input=True)
+    def metric(self):
+        return load_metric(
+            metric="BinaryAccuracy", package="pytorch", validate_input=True
+        )
 
-    @pytest.mark.usefixtures("accuracy")
+    @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         "y_observed,y_predicted,expected",
         [
@@ -25,11 +27,11 @@ class TestAccuracy:
             (pt.tensor([1, 1, 0, 1]), pt.tensor([1, 0, 0, 1]), 0.75),
         ],
     )
-    def test_base_accuracy(self, accuracy, y_observed, y_predicted, expected):
-        actual = accuracy(y_observed=y_observed, y_predicted=y_predicted)
+    def test_base_accuracy(self, metric, y_observed, y_predicted, expected):
+        actual = metric(y_observed=y_observed, y_predicted=y_predicted)
         assert expected == pytest.approx(actual)
 
-    @pytest.mark.usefixtures("accuracy")
+    @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         "y_observed,y_predicted,sample_weights,expected",
         [
@@ -48,16 +50,16 @@ class TestAccuracy:
         ],
     )
     def test_weighted_accuracy(
-        self, accuracy, y_observed, y_predicted, sample_weights, expected
+        self, metric, y_observed, y_predicted, sample_weights, expected
     ):
-        actual = accuracy(
+        actual = metric(
             y_observed=y_observed,
             y_predicted=y_predicted,
             sample_weights=sample_weights,
         )
         assert expected == pytest.approx(actual)
 
-    @pytest.mark.usefixtures("accuracy")
+    @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         "y_observed,y_predicted",
         [
@@ -65,18 +67,18 @@ class TestAccuracy:
             (pt.tensor([1, 1, 1]), pt.tensor([1, 1, 1, 1])),
         ],
     )
-    def test_labels_must_be_same_shape(self, accuracy, y_observed, y_predicted):
+    def test_labels_must_be_same_shape(self, metric, y_observed, y_predicted):
         expected_msg = (
             f"1 validation error for pytorch:BinaryAccuracyModel\ny_predicted\n  "
             f"Shape of inputs mismatched: {len(y_observed)} "
             f"(observed) != {len(y_predicted)} (predicted) (type=value_error)"
         )
         with pytest.raises(ValueError) as e:
-            accuracy.validator(y_observed=y_observed, y_predicted=y_predicted)
+            metric.validator(y_observed=y_observed, y_predicted=y_predicted)
 
         assert expected_msg == str(e.value)
 
-    @pytest.mark.usefixtures("accuracy")
+    @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         "y_observed,y_predicted",
         [
@@ -88,7 +90,7 @@ class TestAccuracy:
             ),
         ],
     )
-    def test_labels_must_be_binary(self, accuracy, y_observed, y_predicted):
+    def test_labels_must_be_binary(self, metric, y_observed, y_predicted):
         found_classes = list(
             set(np.concatenate((y_observed.numpy(), y_predicted.numpy())))
         )
@@ -97,13 +99,12 @@ class TestAccuracy:
             f"Input is not binary: '{len(found_classes)}' class labels "
             "found (type=value_error)"
         )
-        print(found_classes)
         with pytest.raises(ValueError) as e:
-            accuracy.validator(y_observed=y_observed, y_predicted=y_predicted)
+            metric.validator(y_observed=y_observed, y_predicted=y_predicted)
 
         assert expected_msg == str(e.value)
 
-    @pytest.mark.usefixtures("accuracy")
+    @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         "y_observed,y_predicted,sample_weights",
         [
@@ -120,7 +121,7 @@ class TestAccuracy:
         ],
     )
     def test_sample_weights_must_be_same_len(
-        self, accuracy, y_observed, y_predicted, sample_weights
+        self, metric, y_observed, y_predicted, sample_weights
     ):
         expected_msg = (
             f"1 validation error for pytorch:BinaryAccuracyModel\nsample_weights\n  "
@@ -129,7 +130,7 @@ class TestAccuracy:
             f"input:{len(y_observed)}) (type=value_error)"
         )
         with pytest.raises(ValueError) as e:
-            accuracy.validator(
+            metric.validator(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
                 sample_weights=sample_weights,
@@ -137,7 +138,7 @@ class TestAccuracy:
 
         assert expected_msg == str(e.value)
 
-    @pytest.mark.usefixtures("accuracy")
+    @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         "y_observed,y_predicted,sample_weights",
         [
@@ -154,7 +155,7 @@ class TestAccuracy:
         ],
     )
     def test_weights_must_sum_to_one(
-        self, accuracy, y_observed, y_predicted, sample_weights
+        self, metric, y_observed, y_predicted, sample_weights
     ):
         expected_msg = (
             f"1 validation error for pytorch:BinaryAccuracyModel\nsample_weights\n  "
@@ -162,7 +163,7 @@ class TestAccuracy:
             f"Sum of `sample_weights`:{sample_weights.sum()} (type=value_error)"
         )
         with pytest.raises(ValueError) as e:
-            accuracy.validator(
+            metric.validator(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
                 sample_weights=sample_weights,
