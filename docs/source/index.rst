@@ -6,7 +6,7 @@
 Welcome to Otito's documentation!
 ===================================
 
-**Otito** is a Python library that enables deep interrogation of ml models.
+**Otito** is a Python library that enables deep interrogation of performance and behaviour of ml models.
 
 Check out the :doc:`usage` section for further information. There you'll find information on how to :ref:`install <installation>` the package and also how to :ref:`get started <quickstart>`.
 
