@@ -2,7 +2,12 @@ import tensorflow as tf
 
 from otito.metrics._base_metric import BaseMetric
 
-# from otito.metrics.tensorflow.validation.conditions import
+from otito.metrics.tensorflow.validation.conditions import (
+    labels_must_be_same_shape,
+    labels_must_be_binary,
+    sample_weights_must_be_same_len,
+    sample_weights_must_sum_to_one,
+)
 
 
 class BinaryAccuracy(BaseMetric):
@@ -19,6 +24,12 @@ class BinaryAccuracy(BaseMetric):
         "y_observed": (tf.Tensor, None),
         "y_predicted": (tf.Tensor, None),
         "sample_weights": (tf.Tensor, None),
+        "__validators__": {
+            "labels_must_be_same_shape": labels_must_be_same_shape,
+            "labels_must_be_binary": labels_must_be_binary,
+            "sample_weights_must_be_same_len": sample_weights_must_be_same_len,
+            "sample_weights_must_sum_to_one": sample_weights_must_sum_to_one,
+        },
         "__config__": Config,
     }
 
