@@ -1,4 +1,5 @@
-def convert_test_data(values, columns, target_type, **kwargs):
+def get_test_data(data_module, data_name, columns, target_type, **kwargs):
+    values = list(getattr(data_module, data_name).values())
     return [
         values[0],
         [

@@ -3,18 +3,8 @@ import numpy as np
 
 from otito.metrics.utils import load_metric
 
+from tests.test_utils import get_test_data
 from tests.metrics.classification.binary.resources import test_data as td
-from tests.test_utils import convert_test_data
-
-
-def get_test_data(data_name, columns=[0, 1], target_type=np.array, **kwargs):
-    converted_values = convert_test_data(
-        values=list(getattr(td, data_name).values()),
-        columns=columns,
-        target_type=target_type,
-        **kwargs,
-    )
-    return converted_values
 
 
 class TestBinaryAccuracy:
@@ -33,7 +23,10 @@ class TestBinaryAccuracy:
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         *get_test_data(
-            data_name="base_accuracy_data", columns=[0, 1], target_type=target_type
+            data_module=td,
+            data_name="base_accuracy_data",
+            columns=[0, 1],
+            target_type=target_type,
         )
     )
     def test_base_accuracy(self, metric, y_observed, y_predicted, expected):
@@ -43,6 +36,7 @@ class TestBinaryAccuracy:
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         *get_test_data(
+            data_module=td,
             data_name="weighted_accuracy_data",
             columns=[0, 1, 2],
             target_type=target_type,
@@ -61,6 +55,7 @@ class TestBinaryAccuracy:
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         *get_test_data(
+            data_module=td,
             data_name="labels_must_be_same_shape_data",
             columns=[0, 1],
             target_type=target_type,
@@ -81,6 +76,7 @@ class TestBinaryAccuracy:
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         *get_test_data(
+            data_module=td,
             data_name="labels_must_be_binary_data",
             columns=[0, 1],
             target_type=target_type,
@@ -102,6 +98,7 @@ class TestBinaryAccuracy:
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         *get_test_data(
+            data_module=td,
             data_name="sample_weights_must_be_same_len_data",
             columns=[0, 1, 2],
             target_type=target_type,
@@ -129,6 +126,7 @@ class TestBinaryAccuracy:
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
         *get_test_data(
+            data_module=td,
             data_name="weights_must_sum_to_one_data",
             columns=[0, 1, 2],
             target_type=target_type,
