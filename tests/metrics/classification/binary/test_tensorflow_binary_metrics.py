@@ -3,11 +3,26 @@ import tensorflow as tf
 
 from otito.metrics.utils import load_metric
 
+from tests.metrics.classification.binary.resources import test_data as td
+from tests.test_utils import convert_test_data
+
+
+def get_test_data(data_name, columns=[0, 1], target_type=None, **kwargs):
+    converted_values = convert_test_data(
+        values=list(getattr(td, data_name).values()),
+        columns=columns,
+        target_type=target_type,
+        **kwargs,
+    )
+    return converted_values
+
 
 class TestBinaryAccuracy:
     """
     Class to test the tensorflow binary accuracy metric
     """
+
+    target_type = tf.constant
 
     @pytest.fixture
     def metric(self):
@@ -17,14 +32,12 @@ class TestBinaryAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted,expected",
-        [
-            (tf.constant([0, 0, 0, 0]), tf.constant([1, 1, 1, 1]), 0),
-            (tf.constant([1, 1, 1, 1]), tf.constant([0, 0, 0, 0]), 0),
-            (tf.constant([1, 1, 1, 1]), tf.constant([1, 1, 1, 1]), 1),
-            (tf.constant([0, 0, 0, 0]), tf.constant([0, 0, 0, 0]), 1),
-            (tf.constant([1, 1, 0, 1]), tf.constant([1, 0, 0, 1]), 0.75),
-        ],
+        *get_test_data(
+            data_name="base_accuracy_data",
+            columns=[0, 1],
+            target_type=target_type,
+            dtype=tf.float32,
+        )
     )
     def test_base_accuracy(self, metric, y_observed, y_predicted, expected):
         actual = metric(y_observed=y_observed, y_predicted=y_predicted)
@@ -32,21 +45,12 @@ class TestBinaryAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted,sample_weights,expected",
-        [
-            (
-                tf.constant([1, 1, 0, 1]),
-                tf.constant([1, 0, 0, 1]),
-                tf.constant([0.25, 0.25, 0.25, 0.25]),
-                0.75,
-            ),
-            (
-                tf.constant([0, 0, 0, 0]),
-                tf.constant([1, 1, 1, 1]),
-                tf.constant([0.25, 0.25, 0.25, 0.25]),
-                0.0,
-            ),
-        ],
+        *get_test_data(
+            data_name="weighted_accuracy_data",
+            columns=[0, 1, 2],
+            target_type=target_type,
+            dtype=tf.float32,
+        )
     )
     def test_weighted_accuracy(
         self, metric, y_observed, y_predicted, sample_weights, expected
@@ -55,16 +59,18 @@ class TestBinaryAccuracy:
             y_observed=y_observed,
             y_predicted=y_predicted,
             sample_weights=sample_weights,
+            dtype=tf.float32,
         )
         assert expected == pytest.approx(actual)
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted",
-        [
-            (tf.constant([1, 1, 1, 1]), tf.constant([1, 1, 1])),
-            (tf.constant([1, 1, 1]), tf.constant([1, 1, 1, 1])),
-        ],
+        *get_test_data(
+            data_name="labels_must_be_same_shape_data",
+            columns=[0, 1, 2],
+            target_type=target_type,
+            dtype=tf.float32,
+        )
     )
     def test_labels_must_be_same_shape(self, metric, y_observed, y_predicted):
         y_predicted_length = y_predicted.shape.as_list()[0]
@@ -81,21 +87,12 @@ class TestBinaryAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted",
-        [
-            (
-                tf.constant([1, 2, 3], dtype=tf.float32),
-                tf.constant([0, 1, 1], dtype=tf.float32),
-            ),
-            (
-                tf.constant([2, 0, 0], dtype=tf.float32),
-                tf.constant([0, 1, 1], dtype=tf.float32),
-            ),
-            (
-                tf.constant([0, 1, 0], dtype=tf.float32),
-                tf.constant([0.999, 1, 1], dtype=tf.float32),
-            ),
-        ],
+        *get_test_data(
+            data_name="labels_must_be_binary_data",
+            columns=[0, 1, 2],
+            target_type=target_type,
+            dtype=tf.float32,
+        )
     )
     def test_labels_must_be_binary(self, metric, y_observed, y_predicted):
         found_classes = (
@@ -113,19 +110,12 @@ class TestBinaryAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted,sample_weights",
-        [
-            (
-                tf.constant([1, 1, 0]),
-                tf.constant([0, 1, 1]),
-                tf.constant([0.5, 0.5]),
-            ),
-            (
-                tf.constant([1, 0, 0]),
-                tf.constant([0, 1, 1]),
-                tf.constant([0.25, 0.25, 0.25, 0.25]),
-            ),
-        ],
+        *get_test_data(
+            data_name="sample_weights_must_be_same_len_data",
+            columns=[0, 1, 2],
+            target_type=target_type,
+            dtype=tf.float32,
+        )
     )
     def test_sample_weights_must_be_same_len(
         self, metric, y_observed, y_predicted, sample_weights
@@ -141,25 +131,19 @@ class TestBinaryAccuracy:
                 y_observed=y_observed,
                 y_predicted=y_predicted,
                 sample_weights=sample_weights,
+                dtype=tf.float32,
             )
 
         assert expected_msg == str(e.value)
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted,sample_weights",
-        [
-            (
-                tf.constant([1, 1, 0]),
-                tf.constant([0, 1, 1]),
-                tf.constant([0.5, 0.5, 0.3]),
-            ),
-            (
-                tf.constant([1, 0, 0]),
-                tf.constant([0, 1, 1]),
-                tf.constant([0.1, 0.1, 0.1]),
-            ),
-        ],
+        *get_test_data(
+            data_name="weights_must_sum_to_one_data",
+            columns=[0, 1, 2],
+            target_type=target_type,
+            dtype=tf.float32,
+        )
     )
     def test_weights_must_sum_to_one(
         self, metric, y_observed, y_predicted, sample_weights

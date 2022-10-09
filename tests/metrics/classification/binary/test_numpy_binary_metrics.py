@@ -3,11 +3,26 @@ import numpy as np
 
 from otito.metrics.utils import load_metric
 
+from tests.metrics.classification.binary.resources import test_data as td
+from tests.test_utils import convert_test_data
 
-class TestAccuracy:
+
+def get_test_data(data_name, columns=[0, 1], target_type=np.array, **kwargs):
+    converted_values = convert_test_data(
+        values=list(getattr(td, data_name).values()),
+        columns=columns,
+        target_type=target_type,
+        **kwargs,
+    )
+    return converted_values
+
+
+class TestBinaryAccuracy:
     """
     Class to test numpy binary accuracy metric
     """
+
+    target_type = np.array
 
     @pytest.fixture
     def metric(self):
@@ -17,19 +32,9 @@ class TestAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted,expected",
-        [
-            ([0, 0, 0, 0], [1, 1, 1, 1], 0),
-            ([1, 1, 1, 1], [0, 0, 0, 0], 0),
-            ([1, 1, 1, 1], [1, 1, 1, 1], 1),
-            ([0, 0, 0, 0], [0, 0, 0, 0], 1),
-            ([1, 1, 0, 1], [1, 0, 0, 1], 0.75),
-            ([False, False, False, False], [True, True, True, True], 0),
-            ([True, True, True, True], [False, False, False, False], 0),
-            ([True, True, True, True], [True, True, True, True], 1),
-            ([False, False, False, False], [False, False, False, False], 1),
-            ([True, True, False, True], [True, False, False, True], 0.75),
-        ],
+        *get_test_data(
+            data_name="base_accuracy_data", columns=[0, 1], target_type=target_type
+        )
     )
     def test_base_accuracy(self, metric, y_observed, y_predicted, expected):
         actual = metric(y_observed=y_observed, y_predicted=y_predicted)
@@ -37,23 +42,11 @@ class TestAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted,sample_weights,expected",
-        [
-            ([1, 1, 0, 1], [1, 0, 0, 1], [0.25, 0.25, 0.25, 0.25], 0.75),
-            ([0, 0, 0, 0], [1, 1, 1, 1], [0.25, 0.25, 0.25, 0.25], 0.0),
-            (
-                [True, True, False, True],
-                [True, False, False, True],
-                [0.25, 0.25, 0.25, 0.25],
-                0.75,
-            ),
-            (
-                [False, False, False, False],
-                [True, True, True, True],
-                [0.25, 0.25, 0.25, 0.25],
-                0.0,
-            ),
-        ],
+        *get_test_data(
+            data_name="weighted_accuracy_data",
+            columns=[0, 1, 2],
+            target_type=target_type,
+        )
     )
     def test_weighted_accuracy(
         self, metric, y_observed, y_predicted, sample_weights, expected
@@ -67,11 +60,12 @@ class TestAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted",
-        [
-            (np.array([1, 1, 1, 1], dtype=float), np.array([1, 1, 1], dtype=float)),
-            (np.array([1, 1, 1], dtype=float), np.array([1, 1, 1, 1], dtype=float)),
-        ],
+        *get_test_data(
+            data_name="labels_must_be_same_shape_data",
+            columns=[0, 1],
+            target_type=target_type,
+            dtype=float,
+        )
     )
     def test_labels_must_be_same_shape(self, metric, y_observed, y_predicted):
         expected_msg = (
@@ -86,15 +80,12 @@ class TestAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted",
-        [
-            (np.array([1, 2, 3], dtype=float), np.array([0, 1, 1], dtype=float)),
-            (np.array([0, 0, 0], dtype=float), np.array([0, -1, 1], dtype=float)),
-            (
-                np.array([0, 1, 0], dtype=float),
-                np.array([0.999999, 1, 1], dtype=float),
-            ),
-        ],
+        *get_test_data(
+            data_name="labels_must_be_binary_data",
+            columns=[0, 1],
+            target_type=target_type,
+            dtype=float,
+        )
     )
     def test_labels_must_be_binary(self, metric, y_observed, y_predicted):
         found_classes = sorted(list(set(np.concatenate((y_observed, y_predicted)))))
@@ -110,19 +101,12 @@ class TestAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted,sample_weights",
-        [
-            (
-                np.array([1, 1, 0], dtype=float),
-                np.array([0, 1, 1], dtype=float),
-                np.array([0.5, 0.5], dtype=float),
-            ),
-            (
-                np.array([1, 0, 0], dtype=float),
-                np.array([0, 1, 1], dtype=float),
-                np.array([0.25, 0.25, 0.25, 0.25], dtype=float),
-            ),
-        ],
+        *get_test_data(
+            data_name="sample_weights_must_be_same_len_data",
+            columns=[0, 1, 2],
+            target_type=target_type,
+            dtype=float,
+        )
     )
     def test_sample_weights_must_be_same_len(
         self, metric, y_observed, y_predicted, sample_weights
@@ -144,19 +128,12 @@ class TestAccuracy:
 
     @pytest.mark.usefixtures("metric")
     @pytest.mark.parametrize(
-        "y_observed,y_predicted,sample_weights",
-        [
-            (
-                np.array([1, 1, 0], dtype=float),
-                np.array([0, 1, 1], dtype=float),
-                np.array([0.5, 0.5, 0.3], dtype=float),
-            ),
-            (
-                np.array([1, 0, 0], dtype=float),
-                np.array([0, 1, 1], dtype=float),
-                np.array([0.1, 0.1, 0.1], dtype=float),
-            ),
-        ],
+        *get_test_data(
+            data_name="weights_must_sum_to_one_data",
+            columns=[0, 1, 2],
+            target_type=target_type,
+            dtype=float,
+        )
     )
     def test_weights_must_sum_to_one(
         self, metric, y_observed, y_predicted, sample_weights
