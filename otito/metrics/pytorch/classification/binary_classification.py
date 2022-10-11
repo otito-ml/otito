@@ -33,7 +33,7 @@ class BinaryAccuracy(PyTorchBaseMetric):
     }
 
     correct: pt.Tensor
-    total: pt.Tensor
+    total: float
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, val_config=self.input_validator_config, **kwargs)

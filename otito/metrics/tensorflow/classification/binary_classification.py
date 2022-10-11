@@ -1,7 +1,6 @@
 import tensorflow as tf
-from tensorflow.keras.metrics import Metric as KerasMetric
 
-from otito.metrics._base_metric import BaseMetric
+from otito.metrics.tensorflow.base_tensorflow_metric import TensorflowBaseMetric
 
 from otito.metrics.tensorflow.validation.conditions import (
     labels_must_be_same_shape,
@@ -11,7 +10,7 @@ from otito.metrics.tensorflow.validation.conditions import (
 )
 
 
-class BinaryAccuracy(BaseMetric, KerasMetric):
+class BinaryAccuracy(TensorflowBaseMetric):
     """
     The Tensorflow Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a
@@ -34,49 +33,47 @@ class BinaryAccuracy(BaseMetric, KerasMetric):
         "__config__": Config,
     }
 
+    correct: tf.Tensor
+    total: float
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, val_config=self.input_validator_config, **kwargs)
 
-    @staticmethod
-    def _base_accuracy(y_observed: tf.Tensor, y_predicted: tf.Tensor) -> float:
-        return tf.math.reduce_mean(
-            tf.cast(tf.math.equal(y_observed, y_predicted), tf.float32)
-        )
+    def reset(self):
+        self.correct: tf.Tensor = tf.constant(0.0, dtype=tf.float32)
+        self.total: float = 0.0
 
-    @staticmethod
-    def _weighted_accuracy(
-        y_observed: tf.Tensor, y_predicted: tf.Tensor, sample_weights: tf.Tensor
+    def _update_binary_accuracy(
+        self, y_observed: tf.Tensor, y_predicted: tf.Tensor
     ) -> float:
-        return tf.tensordot(
-            tf.cast(tf.math.equal(y_observed, y_predicted), tf.float32),
+        self.correct += tf.reduce_sum(self._tensor_equality(y_observed, y_predicted))
+        self.total += y_observed.size().numpy()
+
+    def _update_weighted_binary_accuracy(
+        self, y_observed: tf.Tensor, y_predicted: tf.Tensor, sample_weights: tf.Tensor
+    ) -> float:
+        self.correct += tf.tensordot(
+            self._tensor_equality(y_observed, y_predicted),
             sample_weights,
             axes=1,
         )
+        self.total = 1.0
 
-    def compute(
+    def update(
         self,
         y_observed: tf.Tensor = None,
         y_predicted: tf.Tensor = None,
         sample_weights: tf.Tensor = None,
-    ) -> float:
+    ):
         if sample_weights is None:
-            return self._base_accuracy(
-                y_observed=y_observed,
-                y_predicted=y_predicted,
-            )
+            self._update_binary_accuracy(y_observed=y_observed, y_predicted=y_predicted)
 
         else:
-            return self._weighted_accuracy(
+            self._update_weighted_binary_accuracy(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
                 sample_weights=sample_weights,
             )
 
-    def update_state(self):
-        pass
-
-    def result(self):
-        pass
-
-    def reset_state(self):
-        pass
+    def compute(self) -> float:
+        return self.correct.numpy() / self.total
