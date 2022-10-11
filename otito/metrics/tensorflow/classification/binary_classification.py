@@ -47,7 +47,7 @@ class BinaryAccuracy(TensorflowBaseMetric):
         self, y_observed: tf.Tensor, y_predicted: tf.Tensor
     ) -> float:
         self.correct += tf.reduce_sum(self._tensor_equality(y_observed, y_predicted))
-        self.total += y_observed.size().numpy()
+        self.total += tf.size(y_observed).numpy()
 
     def _update_weighted_binary_accuracy(
         self, y_observed: tf.Tensor, y_predicted: tf.Tensor, sample_weights: tf.Tensor
