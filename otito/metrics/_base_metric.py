@@ -7,12 +7,24 @@ from pydantic import create_model
 
 class BaseMetric(ABC):
     def __init__(self, *args, **kwargs):
-        self.callable = self.compute
+        self.callable = self.call_metric_function
         self.validate_input = kwargs["validate_input"]
         self.validator = self._build_validator(kwargs["package"], kwargs["val_config"])
 
     @abstractmethod
-    def compute(self, *args, **kwargs):
+    def call_metric_function(self):
+        pass
+
+    @abstractmethod
+    def reset(self):
+        pass
+
+    @abstractmethod
+    def compute(self):
+        pass
+
+    @abstractmethod
+    def update(self):
         pass
 
     def _build_validator(self, package, config):
@@ -27,7 +39,7 @@ class BaseMetric(ABC):
         return inner
 
     def _merge_args_kwargs(self, *args, **kwargs):
-        arg_names = inspect.getfullargspec(self.callable).args
+        arg_names = inspect.getfullargspec(self.callable.__wrapped__).args
         arg_names.remove("self")
         kwargs.update(dict(zip(arg_names, args)))
         return kwargs

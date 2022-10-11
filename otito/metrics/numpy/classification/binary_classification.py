@@ -1,8 +1,6 @@
-__all__ = ["BinaryAccuracy"]
-
 import numpy as np
 
-from otito.metrics._base_metric import BaseMetric
+from otito.metrics.numpy.base_numpy_metric import NumpyBaseMetric
 from otito.metrics.numpy.validation.custom_types import Array
 from otito.metrics.numpy.validation.conditions import (
     labels_must_be_same_shape,
@@ -12,7 +10,7 @@ from otito.metrics.numpy.validation.conditions import (
 )
 
 
-class BinaryAccuracy(BaseMetric):
+class BinaryAccuracy(NumpyBaseMetric):
     """
     The Numpy Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a
@@ -31,6 +29,9 @@ class BinaryAccuracy(BaseMetric):
         },
     }
 
+    correct: int
+    total: int
+
     def __init__(self, *args, **kwargs):
         """
         This is a test docstring
@@ -40,47 +41,42 @@ class BinaryAccuracy(BaseMetric):
         """
         super().__init__(*args, val_config=self.input_validator_config, **kwargs)
 
-    def compute(
+    def reset(self):
+        self.correct = 0
+        self.total = 0
+
+    def _update_binary_accuracy(
+        self, y_observed: np.ndarray, y_predicted: np.ndarray
+    ) -> float:
+        self.correct += np.sum(self._array_equality(y_observed, y_predicted))
+        self.total += y_observed.size
+
+    def _update_weighted_binary_accuracy(
+        self,
+        y_observed: np.ndarray,
+        y_predicted: np.ndarray,
+        sample_weights: np.ndarray,
+    ) -> float:
+        self.correct += np.dot(
+            self._array_equality(y_observed, y_predicted), sample_weights
+        )
+        self.total = 1.0
+
+    def update(
         self,
         y_observed: np.ndarray = None,
         y_predicted: np.ndarray = None,
         sample_weights: np.ndarray = None,
-    ) -> float:
-        """
-        Return an accuracy Score
-
-        :param y_observed: The observed sample labels.
-        :param y_predicted: The predicted sample labels.
-        :param sample_weights: Optional The weight given to each sample.
-
-        :type y_observed: numpy.Array[int]
-        :type y_predicted: numpy.Array[int]
-        :type sample_weights: numpy.Array[int] or None
-
-        :return: The Accuracy Score
-        :rtype: float
-        """
+    ):
         if sample_weights is None:
-            return self._base_accuracy(
-                y_observed=y_observed,
-                y_predicted=y_predicted,
-            )
+            self._update_binary_accuracy(y_observed=y_observed, y_predicted=y_predicted)
 
         else:
-            return self._weighted_accuracy(
+            self._update_weighted_binary_accuracy(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
                 sample_weights=sample_weights,
             )
 
-    @staticmethod
-    def _base_accuracy(y_observed: np.ndarray, y_predicted: np.ndarray) -> float:
-        return np.average(y_observed == y_predicted)
-
-    @staticmethod
-    def _weighted_accuracy(
-        y_observed: np.ndarray,
-        y_predicted: np.ndarray,
-        sample_weights: np.ndarray,
-    ) -> float:
-        return np.dot((y_observed == y_predicted), sample_weights)
+    def compute(self) -> float:
+        return self.correct / self.total
