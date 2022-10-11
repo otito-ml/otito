@@ -1,6 +1,6 @@
 import torch as pt
 
-from otito.metrics._base_metric import PyTorchBaseMetric
+from otito.metrics.pytorch.base_pytorch_metric import PyTorchBaseMetric
 from otito.metrics.pytorch.validation.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
@@ -42,10 +42,6 @@ class BinaryAccuracy(PyTorchBaseMetric):
         self.correct: pt.Tensor = pt.tensor(0.0, dtype=pt.float32)
         self.total: float = 0.0
 
-    @staticmethod
-    def _tensor_equality(y_observed: pt.Tensor, y_predicted: pt.Tensor) -> pt.Tensor:
-        return (y_observed == y_predicted).float()
-
     def _update_binary_accuracy(
         self, y_observed: pt.Tensor, y_predicted: pt.Tensor
     ) -> pt.Tensor:
@@ -78,18 +74,3 @@ class BinaryAccuracy(PyTorchBaseMetric):
 
     def compute(self) -> float:
         return self.correct.float() / self.total
-
-    @PyTorchBaseMetric.validation_handler
-    def call_metric_function(
-        self,
-        y_observed: pt.Tensor = None,
-        y_predicted: pt.Tensor = None,
-        sample_weights: pt.Tensor = None,
-    ):
-        self.reset()
-        self.update(
-            y_observed=y_observed,
-            y_predicted=y_predicted,
-            sample_weights=sample_weights,
-        )
-        return self.compute()
