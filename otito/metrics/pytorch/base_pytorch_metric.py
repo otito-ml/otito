@@ -1,6 +1,5 @@
 from abc import ABC
 
-
 import torch as pt
 
 from otito.metrics._base_metric import BaseMetric
@@ -14,9 +13,3 @@ class PyTorchBaseMetric(BaseMetric, ABC):
     @staticmethod
     def _tensor_equality(left_tensor: pt.Tensor, right_tensor: pt.Tensor) -> pt.Tensor:
         return (left_tensor == right_tensor).float()
-
-    @BaseMetric.validation_handler
-    def call_metric_function(self, **kwargs):
-        self.reset()
-        self.update(**kwargs)
-        return self.compute()

@@ -15,18 +15,3 @@ class NumpyBaseMetric(BaseMetric, ABC):
         left_tensor: np.ndarray, right_tensor: np.ndarray
     ) -> np.ndarray:
         return (left_tensor == right_tensor).astype(float)
-
-    @BaseMetric.validation_handler
-    def call_metric_function(
-        self,
-        y_observed: np.ndarray,
-        y_predicted: np.ndarray,
-        sample_weights: np.ndarray,
-    ):
-        self.reset()
-        self.update(
-            y_observed=y_observed,
-            y_predicted=y_predicted,
-            sample_weights=sample_weights,
-        )
-        return self.compute()

@@ -13,9 +13,3 @@ class TensorflowBaseMetric(BaseMetric, ABC):
     @staticmethod
     def _tensor_equality(left_tensor: tf.Tensor, right_tensor: tf.Tensor) -> tf.Tensor:
         return tf.cast(tf.math.equal(left_tensor, right_tensor), tf.float32)
-
-    @BaseMetric.validation_handler
-    def call_metric_function(self, **kwargs):
-        self.reset()
-        self.update(**kwargs)
-        return self.compute()

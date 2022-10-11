@@ -20,3 +20,11 @@ def argument_validator(validator_model):
         return inner_wrapper
 
     return outer_wrapper
+
+
+def validation_handler(func):
+    @functools.wraps(func)
+    def inner(self, *args, **kwargs):
+        return func(self, **self._parse_input(*args, **kwargs))
+
+    return inner
