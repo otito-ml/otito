@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.keras.metrics import Metric as KerasMetric
 
 from otito.metrics._base_metric import BaseMetric
 
@@ -10,7 +11,7 @@ from otito.metrics.tensorflow.validation.conditions import (
 )
 
 
-class BinaryAccuracy(BaseMetric):
+class BinaryAccuracy(BaseMetric, KerasMetric):
     """
     The Tensorflow Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a
@@ -70,3 +71,12 @@ class BinaryAccuracy(BaseMetric):
                 y_predicted=y_predicted,
                 sample_weights=sample_weights,
             )
+
+    def update_state(self):
+        pass
+
+    def result(self):
+        pass
+
+    def reset_state(self):
+        pass

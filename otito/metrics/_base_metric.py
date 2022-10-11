@@ -36,13 +36,14 @@ class BaseMetric(ABC):
         return self.callable(**self._parse_input(*args, **kwargs))
 
 
-class PyTorchBaseMetric(ABC):
+class PyTorchBaseMetric(BaseMetric, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.callable = self.update
+        self.callable = self.call_metric_function
+        self.reset()
 
     @abstractmethod
-    def update(self, *arg, **kwargs):
+    def reset(self):
         pass
 
     @staticmethod
