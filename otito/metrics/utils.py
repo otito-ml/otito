@@ -1,3 +1,4 @@
+import inspect
 import importlib
 import functools
 
@@ -28,3 +29,10 @@ def validation_handler(func):
         return func(self, **self._parse_input(*args, **kwargs))
 
     return inner
+
+
+def get_function_arg_names(function):
+    arg_names = inspect.getfullargspec(function).args
+    if "self" in arg_names:
+        arg_names.remove("self")
+    return arg_names
