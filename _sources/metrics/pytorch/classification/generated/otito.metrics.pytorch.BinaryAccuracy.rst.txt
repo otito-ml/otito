@@ -1,0 +1,6 @@
+﻿BinaryAccuracy
+====================
+
+.. currentmodule:: otito.metrics.pytorch
+
+.. autofunction:: BinaryAccuracy
