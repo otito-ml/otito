@@ -43,12 +43,12 @@ class TestBinaryAccuracy:
         )
     )
     def test_weighted_accuracy(
-        self, metric, y_observed, y_predicted, sample_weights, expected
+        self, metric, y_observed, y_predicted, sample_weight, expected
     ):
         actual = metric(
             y_observed=y_observed,
             y_predicted=y_predicted,
-            sample_weights=sample_weights,
+            sample_weight=sample_weight,
         )
         assert expected == pytest.approx(actual)
 
@@ -99,26 +99,26 @@ class TestBinaryAccuracy:
     @pytest.mark.parametrize(
         *get_cases(
             data_module=td,
-            data_name="sample_weights_must_be_same_len_data",
+            data_name="sample_weight_must_be_same_len_data",
             columns=[0, 1, 2],
             target_type=target_type,
             dtype=float,
         )
     )
-    def test_sample_weights_must_be_same_len(
-        self, metric, y_observed, y_predicted, sample_weights
+    def test_sample_weight_must_be_same_len(
+        self, metric, y_observed, y_predicted, sample_weight
     ):
         expected_msg = (
-            f"1 validation error for numpy:BinaryAccuracyModel\nsample_weights\n  "
-            "'sample_weights' is not the same length as input. "
-            f"Lengths (sample_weights:{len(sample_weights)}, "
+            f"1 validation error for numpy:BinaryAccuracyModel\nsample_weight\n  "
+            "'sample_weight' is not the same length as input. "
+            f"Lengths (sample_weight:{len(sample_weight)}, "
             f"input:{len(y_observed)}) (type=value_error)"
         )
         with pytest.raises(ValueError) as e:
             metric.validator(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
-                sample_weights=sample_weights,
+                sample_weight=sample_weight,
             )
 
         assert expected_msg == str(e.value)
@@ -134,18 +134,18 @@ class TestBinaryAccuracy:
         )
     )
     def test_weights_must_sum_to_one(
-        self, metric, y_observed, y_predicted, sample_weights
+        self, metric, y_observed, y_predicted, sample_weight
     ):
         expected_msg = (
-            f"1 validation error for numpy:BinaryAccuracyModel\nsample_weights\n  "
-            "'sample_weights' do not sum to one. "
-            f"Sum of `sample_weights`:{sample_weights.sum()} (type=value_error)"
+            f"1 validation error for numpy:BinaryAccuracyModel\nsample_weight\n  "
+            "'sample_weight' do not sum to one. "
+            f"Sum of `sample_weight`:{sample_weight.sum()} (type=value_error)"
         )
         with pytest.raises(ValueError) as e:
             metric.validator(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
-                sample_weights=sample_weights,
+                sample_weight=sample_weight,
             )
 
         assert expected_msg == str(e.value)

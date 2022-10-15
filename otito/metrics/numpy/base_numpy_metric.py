@@ -2,10 +2,10 @@ from abc import ABC
 
 import numpy as np
 
-from otito.metrics._base_metric import BaseMetric
+from otito.metrics._base_metric import StatelessMetricMixin
 
 
-class NumpyBaseMetric(BaseMetric, ABC):
+class NumpyBaseMetric(StatelessMetricMixin, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.reset()

@@ -26,7 +26,7 @@ def labels_must_be_binary(cls, v, values):
 
 
 @validator("sample_weight")
-def sample_weights_must_be_same_len(cls, v, values):
+def sample_weight_must_be_same_len(cls, v, values):
     if v is not None:
         if v.shape.as_list()[0] != values.get("y_observed").shape.as_list()[0]:
             raise ValueError(
@@ -38,7 +38,7 @@ def sample_weights_must_be_same_len(cls, v, values):
 
 
 @validator("sample_weight")
-def sample_weights_must_sum_to_one(cls, v):
+def sample_weight_must_sum_to_one(cls, v):
     if v is not None:
         if not isclose(tf.math.reduce_sum(v).numpy(), 1.0, abs_tol=1e-7):
             raise ValueError(

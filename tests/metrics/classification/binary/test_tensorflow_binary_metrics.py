@@ -17,7 +17,10 @@ class TestBinaryAccuracy:
     @pytest.fixture
     def metric(self):
         return load_metric(
-            metric="BinaryAccuracy", package="tensorflow", validate_input=True
+            metric="BinaryAccuracy",
+            package="tensorflow",
+            validate_input=True,
+            stateful=False,
         )
 
     @pytest.mark.usefixtures("metric")
@@ -45,12 +48,12 @@ class TestBinaryAccuracy:
         )
     )
     def test_weighted_accuracy(
-        self, metric, y_observed, y_predicted, sample_weights, expected
+        self, metric, y_observed, y_predicted, sample_weight, expected
     ):
         actual = metric(
             y_observed=y_observed,
             y_predicted=y_predicted,
-            sample_weights=sample_weights,
+            sample_weight=sample_weight,
             dtype=tf.float32,
         )
         assert expected == pytest.approx(actual)
@@ -106,26 +109,26 @@ class TestBinaryAccuracy:
     @pytest.mark.parametrize(
         *get_cases(
             data_module=td,
-            data_name="sample_weights_must_be_same_len_data",
+            data_name="sample_weight_must_be_same_len_data",
             columns=[0, 1, 2],
             target_type=target_type,
             dtype=tf.float32,
         )
     )
-    def test_sample_weights_must_be_same_len(
-        self, metric, y_observed, y_predicted, sample_weights
+    def test_sample_weight_must_be_same_len(
+        self, metric, y_observed, y_predicted, sample_weight
     ):
         expected_msg = (
-            f"1 validation error for tensorflow:BinaryAccuracyModel\nsample_weights\n  "
-            "'sample_weights' is not the same length as input. "
-            f"Lengths (sample_weights:{sample_weights.shape.as_list()[0]}, "
+            f"1 validation error for tensorflow:BinaryAccuracyModel\nsample_weight\n  "
+            "'sample_weight' is not the same length as input. "
+            f"Lengths (sample_weight:{sample_weight.shape.as_list()[0]}, "
             f"input:{y_observed.shape.as_list()[0]}) (type=value_error)"
         )
         with pytest.raises(ValueError) as e:
             metric.validator(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
-                sample_weights=sample_weights,
+                sample_weight=sample_weight,
                 dtype=tf.float32,
             )
 
@@ -142,19 +145,19 @@ class TestBinaryAccuracy:
         )
     )
     def test_weights_must_sum_to_one(
-        self, metric, y_observed, y_predicted, sample_weights
+        self, metric, y_observed, y_predicted, sample_weight
     ):
-        sample_weight_sum = tf.math.reduce_sum(sample_weights).numpy()
+        sample_weight_sum = tf.math.reduce_sum(sample_weight).numpy()
         expected_msg = (
-            f"1 validation error for tensorflow:BinaryAccuracyModel\nsample_weights\n  "
-            "'sample_weights' do not sum to one. "
-            f"Sum of `sample_weights`:{sample_weight_sum} (type=value_error)"
+            f"1 validation error for tensorflow:BinaryAccuracyModel\nsample_weight\n  "
+            "'sample_weight' do not sum to one. "
+            f"Sum of `sample_weight`:{sample_weight_sum} (type=value_error)"
         )
         with pytest.raises(ValueError) as e:
             metric.validator(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
-                sample_weights=sample_weights,
+                sample_weight=sample_weight,
             )
 
         assert expected_msg == str(e.value)

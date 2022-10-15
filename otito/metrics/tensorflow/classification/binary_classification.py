@@ -1,12 +1,12 @@
 import tensorflow as tf
 
 from otito.metrics.tensorflow.base_tensorflow_metric import TensorflowBaseMetric
-
+from otito.metrics.tensorflow.validation.base_validator import BaseTensorflowValidator
 from otito.metrics.tensorflow.validation.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
-    sample_weights_must_be_same_len,
-    sample_weights_must_sum_to_one,
+    sample_weight_must_be_same_len,
+    sample_weight_must_sum_to_one,
 )
 from otito.metrics._base_metric import StatelessMetricMixin
 
@@ -18,9 +18,6 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
     binary classifier
     """
 
-    class Config:
-        arbitrary_types_allowed = True
-
     input_validator_config = {
         "y_observed": (tf.Tensor, None),
         "y_predicted": (tf.Tensor, None),
@@ -28,10 +25,10 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
         "__validators__": {
             "labels_must_be_same_shape": labels_must_be_same_shape,
             "labels_must_be_binary": labels_must_be_binary,
-            "sample_weights_must_be_same_len": sample_weights_must_be_same_len,
-            "sample_weights_must_sum_to_one": sample_weights_must_sum_to_one,
+            "sample_weight_must_be_same_len": sample_weight_must_be_same_len,
+            "sample_weight_must_sum_to_one": sample_weight_must_sum_to_one,
         },
-        "__config__": Config,
+        "__base__": BaseTensorflowValidator,
     }
     num_correct: tf.Variable
     total: tf.Variable
@@ -66,12 +63,12 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
         self.total.assign_add(tf.cast(tf.size(y_observed), dtype=tf.float32))
 
     def _update_weighted_binary_accuracy(
-        self, y_observed: tf.Tensor, y_predicted: tf.Tensor, sample_weights: tf.Tensor
+        self, y_observed: tf.Tensor, y_predicted: tf.Tensor, sample_weight: tf.Tensor
     ) -> float:
         self.num_correct.assign_add(
             tf.tensordot(
                 self._tensor_equality(y_observed, y_predicted),
-                sample_weights,
+                sample_weight,
                 axes=1,
             )
         )
@@ -95,7 +92,7 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
             self._update_weighted_binary_accuracy(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
-                sample_weights=sample_weight,
+                sample_weight=sample_weight,
             )
 
     def compute(self):

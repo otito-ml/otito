@@ -5,8 +5,8 @@ from otito.metrics.numpy.validation.custom_types import Array
 from otito.metrics.numpy.validation.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
-    sample_weights_must_be_same_len,
-    sample_weights_must_sum_to_one,
+    sample_weight_must_be_same_len,
+    sample_weight_must_sum_to_one,
 )
 
 
@@ -20,12 +20,12 @@ class BinaryAccuracy(NumpyBaseMetric):
     input_validator_config = {
         "y_observed": (Array[float], None),
         "y_predicted": (Array[float], None),
-        "sample_weights": (Array[float], None),
+        "sample_weight": (Array[float], None),
         "__validators__": {
             "labels_must_be_same_shape": labels_must_be_same_shape,
             "labels_must_be_binary": labels_must_be_binary,
-            "sample_weights_must_be_same_len": sample_weights_must_be_same_len,
-            "sample_weights_must_sum_to_one": sample_weights_must_sum_to_one,
+            "sample_weight_must_be_same_len": sample_weight_must_be_same_len,
+            "sample_weight_must_sum_to_one": sample_weight_must_sum_to_one,
         },
     }
 
@@ -55,10 +55,10 @@ class BinaryAccuracy(NumpyBaseMetric):
         self,
         y_observed: np.ndarray,
         y_predicted: np.ndarray,
-        sample_weights: np.ndarray,
+        sample_weight: np.ndarray,
     ) -> float:
         self.correct += np.dot(
-            self._array_equality(y_observed, y_predicted), sample_weights
+            self._array_equality(y_observed, y_predicted), sample_weight
         )
         self.total = 1.0
 
@@ -66,16 +66,16 @@ class BinaryAccuracy(NumpyBaseMetric):
         self,
         y_observed: np.ndarray = None,
         y_predicted: np.ndarray = None,
-        sample_weights: np.ndarray = None,
+        sample_weight: np.ndarray = None,
     ):
-        if sample_weights is None:
+        if sample_weight is None:
             self._update_binary_accuracy(y_observed=y_observed, y_predicted=y_predicted)
 
         else:
             self._update_weighted_binary_accuracy(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
-                sample_weights=sample_weights,
+                sample_weight=sample_weight,
             )
 
     def compute(self) -> float:

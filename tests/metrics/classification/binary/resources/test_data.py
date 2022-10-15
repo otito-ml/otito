@@ -11,7 +11,7 @@ base_accuracy_data = {
 
 
 weighted_accuracy_data = {
-    "fields": "y_observed,y_predicted,sample_weights,expected",
+    "fields": "y_observed,y_predicted,sample_weight,expected",
     "values": [
         ([1, 1, 0, 1], [1, 0, 0, 1], [0.25, 0.25, 0.25, 0.25], 0.75),
         ([0, 0, 0, 0], [1, 1, 1, 1], [0.25, 0.25, 0.25, 0.25], 0.0),
@@ -36,8 +36,8 @@ labels_must_be_binary_data = {
     ],
 }
 
-sample_weights_must_be_same_len_data = {
-    "fields": "y_observed,y_predicted,sample_weights",
+sample_weight_must_be_same_len_data = {
+    "fields": "y_observed,y_predicted,sample_weight",
     "values": [
         ([1, 1, 0], [0, 1, 1], [0.5, 0.5]),
         ([1, 0, 0], [0, 1, 1], [0.25, 0.25, 0.25, 0.25]),
@@ -46,7 +46,7 @@ sample_weights_must_be_same_len_data = {
 
 
 weights_must_sum_to_one_data = {
-    "fields": "y_observed,y_predicted,sample_weights",
+    "fields": "y_observed,y_predicted,sample_weight",
     "values": [
         ([1, 1, 0], [0, 1, 1], [0.5, 0.5, 0.3]),
         ([1, 0, 0], [0, 1, 1], [0.1, 0.1, 0.1]),

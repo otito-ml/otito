@@ -2,10 +2,10 @@ from abc import ABC
 
 import torch as pt
 
-from otito.metrics._base_metric import BaseMetric
+from otito.metrics._base_metric import StatelessMetricMixin
 
 
-class PyTorchBaseMetric(BaseMetric, ABC):
+class PyTorchBaseMetric(StatelessMetricMixin, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.reset()

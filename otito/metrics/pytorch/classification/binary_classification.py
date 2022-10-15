@@ -4,8 +4,8 @@ from otito.metrics.pytorch.base_pytorch_metric import PyTorchBaseMetric
 from otito.metrics.pytorch.validation.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
-    sample_weights_must_be_same_len,
-    sample_weights_must_sum_to_one,
+    sample_weight_must_be_same_len,
+    sample_weight_must_sum_to_one,
 )
 
 
@@ -22,12 +22,12 @@ class BinaryAccuracy(PyTorchBaseMetric):
     input_validator_config = {
         "y_observed": (pt.Tensor, None),
         "y_predicted": (pt.Tensor, None),
-        "sample_weights": (pt.Tensor, None),
+        "sample_weight": (pt.Tensor, None),
         "__validators__": {
             "labels_must_be_same_shape": labels_must_be_same_shape,
             "labels_must_be_binary": labels_must_be_binary,
-            "sample_weights_must_be_same_len": sample_weights_must_be_same_len,
-            "sample_weights_must_sum_to_one": sample_weights_must_sum_to_one,
+            "sample_weight_must_be_same_len": sample_weight_must_be_same_len,
+            "sample_weight_must_sum_to_one": sample_weight_must_sum_to_one,
         },
         "__config__": Config,
     }
@@ -49,10 +49,10 @@ class BinaryAccuracy(PyTorchBaseMetric):
         self.total += y_observed.numel()
 
     def _update_weighted_binary_accuracy(
-        self, y_observed: pt.Tensor, y_predicted: pt.Tensor, sample_weights: pt.Tensor
+        self, y_observed: pt.Tensor, y_predicted: pt.Tensor, sample_weight: pt.Tensor
     ) -> pt.Tensor:
         self.correct += pt.sum(
-            pt.dot(self._tensor_equality(y_observed, y_predicted), sample_weights)
+            pt.dot(self._tensor_equality(y_observed, y_predicted), sample_weight)
         )
         self.total = 1.0
 
@@ -60,16 +60,16 @@ class BinaryAccuracy(PyTorchBaseMetric):
         self,
         y_observed: pt.Tensor = None,
         y_predicted: pt.Tensor = None,
-        sample_weights: pt.Tensor = None,
+        sample_weight: pt.Tensor = None,
     ):
-        if sample_weights is None:
+        if sample_weight is None:
             self._update_binary_accuracy(y_observed=y_observed, y_predicted=y_predicted)
 
         else:
             self._update_weighted_binary_accuracy(
                 y_observed=y_observed,
                 y_predicted=y_predicted,
-                sample_weights=sample_weights,
+                sample_weight=sample_weight,
             )
 
     def compute(self) -> float:

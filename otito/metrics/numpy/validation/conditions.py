@@ -25,24 +25,23 @@ def labels_must_be_binary(cls, v, values):
     return v
 
 
-@validator("sample_weights")
-def sample_weights_must_be_same_len(cls, v, values):
+@validator("sample_weight")
+def sample_weight_must_be_same_len(cls, v, values):
     if v is not None:
         if len(v) != len(values.get("y_observed")):
             raise ValueError(
-                "'sample_weights' is not the same length as input. "
-                f"Lengths (sample_weights:{len(v)}, "
+                "'sample_weight' is not the same length as input. "
+                f"Lengths (sample_weight:{len(v)}, "
                 f"input:{len(values.get('y_observed'))})"
             )
     return v
 
 
-@validator("sample_weights")
-def sample_weights_must_sum_to_one(cls, v):
+@validator("sample_weight")
+def sample_weight_must_sum_to_one(cls, v):
     if v is not None:
         if not isclose(sum(v), 1.0, abs_tol=1e-7):
             raise ValueError(
-                "'sample_weights' do not sum to one. "
-                f"Sum of `sample_weights`:{sum(v)}"
+                "'sample_weight' do not sum to one. " f"Sum of `sample_weight`:{sum(v)}"
             )
     return v
