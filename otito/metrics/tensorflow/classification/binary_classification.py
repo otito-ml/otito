@@ -30,8 +30,6 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
         },
         "__base__": BaseTensorflowValidator,
     }
-    num_correct: tf.Variable
-    total: tf.Variable
 
     def __init__(self, *args, name=None, dtype=tf.float32, threshold=0.5, **kwargs):
         TensorflowBaseMetric.__init__(self, *args, name=name, dtype=dtype)
