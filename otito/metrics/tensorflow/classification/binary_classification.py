@@ -33,10 +33,8 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
     num_correct: tf.Variable
     total: tf.Variable
 
-    def __init__(self, *args, **kwargs):
-        TensorflowBaseMetric.__init__(
-            self, *args, name="binary_accuracy", dtype=tf.float32
-        )
+    def __init__(self, *args, name=None, dtype=tf.float32, threshold=0.5, **kwargs):
+        TensorflowBaseMetric.__init__(self, *args, name=name, dtype=dtype)
         StatelessMetricMixin.__init__(
             self, *args, val_config=self.input_validator_config, **kwargs
         )
@@ -46,13 +44,7 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
         self.total = self.add_weight(
             name="total", initializer="zeros", dtype=tf.float32
         )
-
-        if not self.stateful:
-            self.__call__ = self.call_metric_function
-
-    def reset(self):
-        self.num_correct.assign(0)
-        self.total.assign(0)
+        self.threshold = threshold
 
     def _update_binary_accuracy(
         self, y_observed: tf.Tensor, y_predicted: tf.Tensor
@@ -74,9 +66,9 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
         )
         self.total.assign(1)
 
-    @tf.function
-    def tf_print(self, value):
-        tf.print(value)
+    def reset(self):
+        self.num_correct.assign(0)
+        self.total.assign(0)
 
     def update(
         self,
@@ -84,7 +76,8 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
         y_predicted: tf.Tensor = None,
         sample_weight: tf.Tensor = None,
     ):
-        y_predicted = tf.cast(tf.where(y_predicted >= 0.5, 1.0, 0.0), tf.float32)
+        y_predicted = self.apply_threshold(y_predicted, threshold=self.threshold)
+
         if sample_weight is None:
             self._update_binary_accuracy(y_observed=y_observed, y_predicted=y_predicted)
 

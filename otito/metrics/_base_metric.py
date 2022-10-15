@@ -45,11 +45,12 @@ class StatelessMetricMixin(ABC):
             metric_arguments = self.validator(**metric_arguments).dict()
         return metric_arguments
 
-    def call_metric_function(self, **kwargs):
+    def stateless_metric_call(self, **kwargs):
         self.update(**kwargs)
         result = self.compute()
-        self.reset()
+        if not self.stateful:
+            self.reset()
         return result
 
     def __call__(self, *args, **kwargs):
-        return self.call_metric_function(**self._parse_input(*args, **kwargs))
+        return self.stateless_metric_call(**self._parse_input(*args, **kwargs))

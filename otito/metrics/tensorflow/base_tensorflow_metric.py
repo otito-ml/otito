@@ -129,3 +129,7 @@ class TensorflowBaseMetric(base_layer.Layer, ABC):
     @staticmethod
     def _tensor_equality(left_tensor: tf.Tensor, right_tensor: tf.Tensor) -> tf.Tensor:
         return tf.cast(tf.math.equal(left_tensor, right_tensor), tf.float32)
+
+    @staticmethod
+    def apply_threshold(predicted_tensor, threshold=0.5):
+        return tf.cast(tf.where(predicted_tensor >= threshold, 1.0, 0.0), tf.float32)
