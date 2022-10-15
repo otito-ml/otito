@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 
 from pydantic import create_model
 
-from otito.metrics.utils import validation_handler, get_function_arg_names
+from otito.metrics.utils import get_function_arg_names
 
 import tensorflow as tf
 
 
-class BaseMetric(ABC):
+class StatelessMetricMixin(ABC):
     def __init__(self, *args, **kwargs):
         self.validate_input = kwargs.pop("validate_input")
         self.validator = self._build_validator(
@@ -44,7 +44,6 @@ class BaseMetric(ABC):
             metric_arguments = self.validator(**metric_arguments).dict()
         return metric_arguments
 
-    @validation_handler
     def call_metric_function(self, **kwargs):
         self.update(**kwargs)
         result = self.compute()

@@ -9,10 +9,7 @@ def load_metric(
     metric_module = importlib.import_module(name=f"otito.metrics.{package}")
     callable_metric = getattr(metric_module, metric)
     kwargs.update({"package": package})
-    if kwargs["stateful"]:
-        return callable_metric(*args, **kwargs)
-    else:
-        return callable_metric(*args, **kwargs).call_metric_function
+    return callable_metric(*args, **kwargs)
 
 
 def argument_validator(validator_model):

@@ -8,10 +8,10 @@ from otito.metrics.tensorflow.validation.conditions import (
     sample_weights_must_be_same_len,
     sample_weights_must_sum_to_one,
 )
-from otito.metrics._base_metric import BaseMetric
+from otito.metrics._base_metric import StatelessMetricMixin
 
 
-class BinaryAccuracy(TensorflowBaseMetric, BaseMetric):
+class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
     """
     The Tensorflow Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a
@@ -24,7 +24,7 @@ class BinaryAccuracy(TensorflowBaseMetric, BaseMetric):
     input_validator_config = {
         "y_observed": (tf.Tensor, None),
         "y_predicted": (tf.Tensor, None),
-        "sample_weights": (tf.Tensor, None),
+        "sample_weight": (tf.Tensor, None),
         "__validators__": {
             "labels_must_be_same_shape": labels_must_be_same_shape,
             "labels_must_be_binary": labels_must_be_binary,
@@ -37,8 +37,10 @@ class BinaryAccuracy(TensorflowBaseMetric, BaseMetric):
     total: tf.Variable
 
     def __init__(self, *args, **kwargs):
-        TensorflowBaseMetric.__init__(self, *args, name="binary_a", dtype=tf.float32)
-        BaseMetric.__init__(
+        TensorflowBaseMetric.__init__(
+            self, *args, name="binary_accuracy", dtype=tf.float32
+        )
+        StatelessMetricMixin.__init__(
             self, *args, val_config=self.input_validator_config, **kwargs
         )
         self.num_correct = self.add_weight(

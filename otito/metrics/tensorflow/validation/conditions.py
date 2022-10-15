@@ -25,24 +25,24 @@ def labels_must_be_binary(cls, v, values):
     return v
 
 
-@validator("sample_weights")
+@validator("sample_weight")
 def sample_weights_must_be_same_len(cls, v, values):
     if v is not None:
         if v.shape.as_list()[0] != values.get("y_observed").shape.as_list()[0]:
             raise ValueError(
-                "'sample_weights' is not the same length as input. "
-                f"Lengths (sample_weights:{v.shape.as_list()[0]}, "
+                "'sample_weight' is not the same length as input. "
+                f"Lengths (sample_weight:{v.shape.as_list()[0]}, "
                 f"input:{values.get('y_observed').shape.as_list()[0]})"
             )
     return v
 
 
-@validator("sample_weights")
+@validator("sample_weight")
 def sample_weights_must_sum_to_one(cls, v):
     if v is not None:
         if not isclose(tf.math.reduce_sum(v).numpy(), 1.0, abs_tol=1e-7):
             raise ValueError(
-                "'sample_weights' do not sum to one. "
-                f"Sum of `sample_weights`:{tf.math.reduce_sum(v).numpy()}"
+                "'sample_weight' do not sum to one. "
+                f"Sum of `sample_weight`:{tf.math.reduce_sum(v).numpy()}"
             )
     return v
