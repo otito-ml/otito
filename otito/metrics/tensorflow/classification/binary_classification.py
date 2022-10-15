@@ -11,7 +11,28 @@ from otito.metrics.tensorflow.validation.conditions import (
 from otito.metrics._base_metric import StatelessMetricMixin
 
 
-class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
+class BinaryAccuracyBase(StatelessMetricMixin, TensorflowBaseMetric):
+    def __init__(self, *args, name=None, dtype=tf.float32, threshold=0.5, **kwargs):
+        TensorflowBaseMetric.__init__(self, *args, name=name, dtype=dtype)
+        StatelessMetricMixin.__init__(
+            self, *args, val_config=self.input_validator_config, **kwargs
+        )
+        self.initialise_states(threshold=threshold)
+
+    def reset(self):
+        pass
+
+    def compute(self):
+        pass
+
+    def update(self):
+        pass
+
+    def initialise_states(self):
+        pass
+
+
+class BinaryAccuracy(BinaryAccuracyBase):
     """
     The Tensorflow Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a
@@ -31,11 +52,11 @@ class BinaryAccuracy(StatelessMetricMixin, TensorflowBaseMetric):
         "__base__": BaseTensorflowValidator,
     }
 
-    def __init__(self, *args, name=None, dtype=tf.float32, threshold=0.5, **kwargs):
-        TensorflowBaseMetric.__init__(self, *args, name=name, dtype=dtype)
-        StatelessMetricMixin.__init__(
-            self, *args, val_config=self.input_validator_config, **kwargs
-        )
+    num_correct = None
+    total = None
+    threshold = None
+
+    def initialise_states(self, threshold=0.5):
         self.num_correct = self.add_weight(
             name="num_correct", initializer="zeros", dtype=tf.float32
         )

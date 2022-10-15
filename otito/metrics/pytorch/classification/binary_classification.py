@@ -38,6 +38,10 @@ class BinaryAccuracy(PyTorchBaseMetric):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, val_config=self.input_validator_config, **kwargs)
 
+    def initialise_states(self):
+        self.correct: pt.Tensor = pt.tensor(0.0, dtype=pt.float32)
+        self.total: float = 0.0
+
     def reset(self):
         self.correct: pt.Tensor = pt.tensor(0.0, dtype=pt.float32)
         self.total: float = 0.0

@@ -32,6 +32,10 @@ class StatelessMetricMixin(ABC):
     def update(self):
         pass
 
+    @abstractmethod
+    def initialise_states(self):
+        pass
+
     def _build_validator(self, package, config):
         return create_model(f"{package}:{self.__class__.__name__}Model", **config)
 

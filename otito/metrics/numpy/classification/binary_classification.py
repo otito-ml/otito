@@ -45,6 +45,10 @@ class BinaryAccuracy(NumpyBaseMetric):
         self.correct = 0
         self.total = 0
 
+    def initialise_states(self):
+        self.correct = 0
+        self.total = 0
+
     def _update_binary_accuracy(
         self, y_observed: np.ndarray, y_predicted: np.ndarray
     ) -> float:
