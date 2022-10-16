@@ -1,35 +1,13 @@
 import tensorflow as tf
 
-from otito.metrics.tensorflow.base_tensorflow_metric import TensorflowBaseMetric
-from otito.metrics.tensorflow.validation.base_validator import BaseTensorflowValidator
 from otito.metrics.tensorflow.validation.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
     sample_weight_must_be_same_len,
     sample_weight_must_sum_to_one,
 )
-from otito.metrics._base_metric import StatelessMetricMixin
-
-
-class BinaryAccuracyBase(StatelessMetricMixin, TensorflowBaseMetric):
-    def __init__(self, *args, name=None, dtype=tf.float32, threshold=0.5, **kwargs):
-        TensorflowBaseMetric.__init__(self, *args, name=name, dtype=dtype)
-        StatelessMetricMixin.__init__(
-            self, *args, val_config=self.input_validator_config, **kwargs
-        )
-        self.initialise_states(threshold=threshold)
-
-    def reset(self):
-        pass
-
-    def compute(self):
-        pass
-
-    def update(self):
-        pass
-
-    def initialise_states(self):
-        pass
+from otito.metrics.tensorflow.validation.base_validator import BaseTensorflowValidator
+from otito.metrics.tensorflow.base_tensorflow_metric import BinaryAccuracyBase
 
 
 class BinaryAccuracy(BinaryAccuracyBase):

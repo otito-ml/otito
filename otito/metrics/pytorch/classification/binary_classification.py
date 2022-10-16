@@ -1,6 +1,6 @@
 import torch as pt
 
-from otito.metrics.pytorch.base_pytorch_metric import PyTorchBaseMetric
+from otito.metrics.pytorch.base_pytorch_metric import BinaryAccuracyBase
 from otito.metrics.pytorch.validation.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
@@ -9,7 +9,7 @@ from otito.metrics.pytorch.validation.conditions import (
 )
 
 
-class BinaryAccuracy(PyTorchBaseMetric):
+class BinaryAccuracy(BinaryAccuracyBase):
     """
     The Pytorch Binary Classification Accuracy Metric provides a score that
     represents the proportion of a dataset that was correctly labeled by a
@@ -32,33 +32,32 @@ class BinaryAccuracy(PyTorchBaseMetric):
         "__config__": Config,
     }
 
-    correct: pt.Tensor
-    total: float
+    num_correct = None
+    total = None
+    threshold = None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, val_config=self.input_validator_config, **kwargs)
+    full_state_update = False
 
-    def initialise_states(self):
-        self.correct: pt.Tensor = pt.tensor(0.0, dtype=pt.float32)
-        self.total: float = 0.0
-
-    def reset(self):
-        self.correct: pt.Tensor = pt.tensor(0.0, dtype=pt.float32)
-        self.total: float = 0.0
+    def initialise_states(self, threshold=0.5):
+        self.add_state("correct", default=pt.tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("total", default=pt.tensor(0.0), dist_reduce_fx="sum")
+        self.threshold = threshold
 
     def _update_binary_accuracy(
         self, y_observed: pt.Tensor, y_predicted: pt.Tensor
     ) -> pt.Tensor:
-        self.correct += pt.sum(self._tensor_equality(y_observed, y_predicted))
+        self.correct += pt.sum(self._tensor_equality(y_observed, y_predicted)).type(
+            pt.int32
+        )
         self.total += y_observed.numel()
 
     def _update_weighted_binary_accuracy(
         self, y_observed: pt.Tensor, y_predicted: pt.Tensor, sample_weight: pt.Tensor
     ) -> pt.Tensor:
-        self.correct += pt.sum(
-            pt.dot(self._tensor_equality(y_observed, y_predicted), sample_weight)
+        self.correct += pt.dot(
+            self._tensor_equality(y_observed, y_predicted), sample_weight
         )
-        self.total = 1.0
+        self.total = pt.tensor(1.0)
 
     def update(
         self,
@@ -66,6 +65,8 @@ class BinaryAccuracy(PyTorchBaseMetric):
         y_predicted: pt.Tensor = None,
         sample_weight: pt.Tensor = None,
     ):
+        y_predicted = self.apply_threshold(y_predicted, self.threshold)
+
         if sample_weight is None:
             self._update_binary_accuracy(y_observed=y_observed, y_predicted=y_predicted)
 

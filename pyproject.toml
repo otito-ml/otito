@@ -18,6 +18,7 @@ torchmetrics = "^0.10.0"
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.0"
 flake8 = "^5.0.0"
+flake8-docstrings = "^1.6.0"
 black = ">22.1.0"
 pre-commit = "^2.20.0"
 flake8-typing-imports = "^1.13.0"

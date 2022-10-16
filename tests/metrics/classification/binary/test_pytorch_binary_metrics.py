@@ -18,7 +18,10 @@ class TestBinaryAccuracy:
     @pytest.fixture
     def metric(self):
         return load_metric(
-            metric="BinaryAccuracy", package="pytorch", validate_input=True
+            metric="BinaryAccuracy",
+            package="pytorch",
+            validate_input=True,
+            stateful=False,
         )
 
     @pytest.mark.usefixtures("metric")

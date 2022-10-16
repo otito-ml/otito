@@ -8,6 +8,8 @@ from keras.utils import metrics_utils
 from keras.dtensor import dtensor_api as dtensor
 from keras.utils import tf_utils
 
+from otito.metrics._base_metric import StatelessMetricMixin
+
 
 class TensorflowBaseMetric(base_layer.Layer, ABC):
     """
@@ -133,3 +135,24 @@ class TensorflowBaseMetric(base_layer.Layer, ABC):
     @staticmethod
     def apply_threshold(predicted_tensor, threshold=0.5):
         return tf.cast(tf.where(predicted_tensor >= threshold, 1.0, 0.0), tf.float32)
+
+
+class BinaryAccuracyBase(StatelessMetricMixin, TensorflowBaseMetric):
+    def __init__(self, *args, name=None, dtype=tf.float32, threshold=0.5, **kwargs):
+        TensorflowBaseMetric.__init__(self, *args, name=name, dtype=dtype)
+        StatelessMetricMixin.__init__(
+            self, *args, val_config=self.input_validator_config, **kwargs
+        )
+        self.initialise_states(threshold=threshold)
+
+    def reset(self):
+        pass
+
+    def compute(self):
+        pass
+
+    def update(self):
+        pass
+
+    def initialise_states(self):
+        pass
