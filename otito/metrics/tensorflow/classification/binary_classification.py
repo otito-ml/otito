@@ -1,13 +1,13 @@
 import tensorflow as tf
 
-from otito.metrics.tensorflow.validation.conditions import (
+from otito.base.tensorflow.base_tensorflow_metric import BinaryAccuracyBase
+from otito.input_validation.tensorflow.base_validator import BaseTensorflowValidator
+from otito.input_validation.tensorflow.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
     sample_weight_must_be_same_len,
     sample_weight_must_sum_to_one,
 )
-from otito.metrics.tensorflow.validation.base_validator import BaseTensorflowValidator
-from otito.metrics.tensorflow.base_tensorflow_metric import BinaryAccuracyBase
 
 
 class BinaryAccuracy(BinaryAccuracyBase):

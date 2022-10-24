@@ -1,8 +1,8 @@
 import numpy as np
 
-from otito.metrics.numpy.base_numpy_metric import NumpyBaseMetric
-from otito.metrics.numpy.validation.custom_types import Array
-from otito.metrics.numpy.validation.conditions import (
+from otito.base.numpy.base_numpy_metric import NumpyBaseMetric
+from otito.input_validation.numpy.custom_types import Array
+from otito.input_validation.numpy.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
     sample_weight_must_be_same_len,

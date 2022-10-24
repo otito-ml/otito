@@ -1,7 +1,7 @@
 import torch as pt
 
-from otito.metrics.pytorch.base_pytorch_metric import BinaryAccuracyBase
-from otito.metrics.pytorch.validation.conditions import (
+from otito.base.pytorch.base_pytorch_metric import BinaryAccuracyBase
+from otito.input_validation.pytorch.conditions import (
     labels_must_be_same_shape,
     labels_must_be_binary,
     sample_weight_must_be_same_len,

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from otito.metrics.utils import load_metric
+from otito.utils import load_metric
 
 from tests.test_utils import get_cases
 from tests.metrics.classification.binary.resources import test_data as td
